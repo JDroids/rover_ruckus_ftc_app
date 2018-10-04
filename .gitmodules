@@ -1,0 +1,3 @@
+[submodule "robotlib"]
+	path = robotlib
+	url = git@github.com:JDroids/robotlib.git
