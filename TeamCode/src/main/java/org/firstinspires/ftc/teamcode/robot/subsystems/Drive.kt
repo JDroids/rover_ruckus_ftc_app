@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.robot.subsystems
 
+import com.jdroids.robotlib.command.Scheduler
 import com.jdroids.robotlib.command.Subsystem
 import com.jdroids.robotlib.util.getActiveOpMode
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 
 class Drive : Subsystem() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
-    private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
+    private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
 
     var leftPower = 0.0
     var rightPower = 0.0

@@ -20,8 +20,8 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(':robotlib')
-    //    implementation project(':openCVLibrary3')
-    // implementation project(':endercv')
+    implementation project(':openCVLibrary3')
+    implementation project(':endercv')
 }
