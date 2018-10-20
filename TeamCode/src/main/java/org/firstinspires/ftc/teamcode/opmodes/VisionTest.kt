@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
+/*
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.corningrobotics.enderbots.endercv.CameraViewDisplay
 import org.firstinspires.ftc.teamcode.SamplingVision
 
+@Disabled
 @Autonomous(name="VisionTest")
 class VisionTest : OpMode() {
     private val vision = SamplingVision()
@@ -24,4 +27,4 @@ class VisionTest : OpMode() {
     override fun stop() {
         vision.disable()
     }
-}
+}*/

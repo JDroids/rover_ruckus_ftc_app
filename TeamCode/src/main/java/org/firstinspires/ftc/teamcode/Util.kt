@@ -8,14 +8,17 @@ import com.jdroids.robotlib.pid.PIDInterface
 import com.jdroids.robotlib.pid.SimplePIDController
 import com.jdroids.robotlib.util.Boundary
 import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDCoefficients
+import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.pathplanning.*
 
 object Util {
@@ -24,7 +27,7 @@ object Util {
 
     fun BNO055IMU.getRadians() = ((this.angularOrientation.toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).toAngleUnit(AngleUnit.DEGREES).firstAngle+180)*-1).toRadians()
 
-    val hitSample = LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 2.5))
+    val hitSample = LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 1.0))
     val depositMarker = LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 2.5))
 
     val goToCrater = LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 7.5))
@@ -38,13 +41,45 @@ object Util {
 
     fun initializeIMU(imu: BNO055IMU) {
         val parameters = BNO055IMU.Parameters()
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC
         parameters.calibrationDataFile = "BNO055IMUCalibration.json" // see the calibration sample opmode
         parameters.loggingEnabled = true
         parameters.loggingTag = "IMU"
 
         imu.initialize(parameters)
+    }
+
+    fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor, hookServo: Servo,
+             tofSensor: Rev2mDistanceSensor) {
+        hangMotor1.power = -+0.5
+        hangMotor2.power = -0.5
+
+        while (tofSensor.getDistance(DistanceUnit.INCH) > 1.6 && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("TOFSensor", tofSensor.getDistance(DistanceUnit.INCH))
+            opMode.telemetry.update()
+        }
+
+        opMode.sleep(600)
+
+        hangMotor1.power = 0.0
+        hangMotor2.power = 0.0
+
+        setHookState(HookState.OPENED, hookServo)
+
+        opMode.sleep(500)
+    }
+
+    enum class HookState {
+        LATCHED,
+        OPENED
+    }
+
+    fun setHookState(state: HookState, servo: Servo) {
+        servo.position = when (state) {
+            HookState.LATCHED -> 0.0
+            HookState.OPENED -> 1.0
+        }
     }
 
     fun doVision(hardwareMap: HardwareMap): SamplingVision.GoldPosition {
@@ -90,20 +125,22 @@ object Util {
 
     fun hitSample(samplePosition: SamplingVision.GoldPosition, opMode: LinearOpMode,
                   leftMotor: DcMotor, rightMotor: DcMotor, imu: BNO055IMU) {
-        turnToRelativeAngle(when (samplePosition) {
+        /*turnToRelativeAngle(when (samplePosition) {
             SamplingVision.GoldPosition.LEFT -> leftSampleRelativeAngle
             SamplingVision.GoldPosition.CENTER -> centerSampleRelativeAngle
             SamplingVision.GoldPosition.RIGHT -> rightSampleRelativeAngle
             else -> throw IllegalArgumentException("None position passed")
             }, opMode, leftMotor, rightMotor, imu)
-
+        */
         followPath(hitSample, opMode, leftMotor, rightMotor)
     }
 
-    fun followPath(path: ConstantCurvaturePath, opMode: LinearOpMode, leftMotor: DcMotor, rightMotor: DcMotor) {
+    fun followPath(path: ConstantCurvaturePath, opMode: LinearOpMode, leftMotor: DcMotor, rightMotor: DcMotor, reversed:Boolean=false) {
         val follower = ConstantCurvaturePathFollower(path, constraints, statistics)
 
         val timer = ElapsedTime()
+
+        val direction = if (reversed) -1 else 1
 
         while (timer.seconds() < follower.timeToFollow && opMode.opModeIsActive()) {
             follower.generate(timer.seconds())
@@ -111,8 +148,8 @@ object Util {
             val followerResult = follower.generate(timer.seconds())
             val target = followerResult.state.toMotorVelocity(statistics)
 
-            leftMotor.power = (target.leftVelocity / constraints.maximumVelocity)
-            rightMotor.power = (target.leftVelocity / constraints.maximumVelocity)
+            leftMotor.power = (target.leftVelocity / constraints.maximumVelocity) * direction
+            rightMotor.power = (target.leftVelocity / constraints.maximumVelocity) * direction
         }
     }
 
@@ -137,23 +174,35 @@ object Util {
 
     @Config
     object TurningPIDCoefficients {
-        @JvmField var coefficients = PIDCoefficients(0.0, 0.0, 0.0)
+        @JvmField var p = 0.03
+        @JvmField var i = 0.0
+        @JvmField var d = 0.0
     }
 
     fun turnToAngle(angle: Double, opMode: LinearOpMode,
                     leftMotor: DcMotor, rightMotor: DcMotor, imu: BNO055IMU) {
-        val pid = SimplePIDController({imu.getRadians()},
-                {output -> leftMotor.power = output; rightMotor.power = -output},
-                TurningPIDCoefficients.coefficients)
+        val pid = JankPID()
 
-        pid.setpoint = imu.getRadians()
-        pid.continuous = true
-        pid.inputBoundary = Boundary(0.0, Math.PI*2)
-        pid.tolerance = PIDInterface.Tolerance.percentageTolerance(5.0)
+        pid.setCoeffecients(TurningPIDCoefficients.p, TurningPIDCoefficients.i,
+                TurningPIDCoefficients.d)
 
-        while (opMode.opModeIsActive()) {
-            pid.calculate()
+        var current = imu.getRadians()
+
+        while (Math.abs(current - angle) < 3.toRadians() && opMode.opModeIsActive()) {
+            current = imu.getRadians()
+
+            val output = pid.calculateOutput(angle, current)
+
+            leftMotor.power = output
+            rightMotor.power = -output
+
+            opMode.telemetry.addData("Output", output)
+            opMode.telemetry.addData("Error", current - angle)
+            opMode.telemetry.update()
         }
+
+        leftMotor.power = 0.0
+        rightMotor.power = 0.0
     }
 
     fun turnToRelativeAngle(angle: Double, opMode: LinearOpMode,

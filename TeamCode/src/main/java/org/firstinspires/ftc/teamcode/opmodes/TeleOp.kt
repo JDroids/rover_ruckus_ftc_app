@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.teamcode.Util
 
 @TeleOp(name="TeleOp")
 class TeleOp : OpMode() {
@@ -13,6 +15,8 @@ class TeleOp : OpMode() {
 
     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
+
+    private val hangServo by lazy {hardwareMap!!.get(Servo::class.java, "hangServo")}
 
     private fun squareWithSign(value: Double) =
         if (value < 0) Math.pow(value, 2.0) else -Math.pow(value, 2.0)
@@ -26,20 +30,27 @@ class TeleOp : OpMode() {
         rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
+    val hangMotorPower = 0.9
+
     override fun loop() {
         when {
             gamepad1.left_bumper -> {
-                hangMotor1.power = 0.5
-                hangMotor2.power = 0.5
+                hangMotor1.power = hangMotorPower
+                hangMotor2.power = hangMotorPower
             }
             gamepad1.right_bumper -> {
-                hangMotor1.power = -0.5
-                hangMotor2.power = -0.5
+                hangMotor1.power = -hangMotorPower
+                hangMotor2.power = -hangMotorPower
             }
             else -> {
                 hangMotor1.power = 0.0
                 hangMotor2.power = 0.0
             }
+        }
+
+        when {
+            gamepad1.a -> Util.setHookState(Util.HookState.LATCHED, hangServo)
+            gamepad1.b -> Util.setHookState(Util.HookState.OPENED, hangServo)
         }
 
         curvatureDrive(squareWithSign(-gamepad1.left_stick_y.toDouble()),

@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.Util.toRadians
 
-@Autonomous(name="DepotAuto")
-class DepotAutonomous : LinearOpMode() {
+@Autonomous(name="TurnTest")
+class TurnTest : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
     private val imu by lazy {hardwareMap!!.get(BNO055IMU::class.java, "imu")}
@@ -25,15 +25,8 @@ class DepotAutonomous : LinearOpMode() {
 
         waitForStart()
 
-        leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-
-        val goldPosition = Util.doVision(hardwareMap)
-
-        Util.hitSampleAndDepositMarker(goldPosition, this, leftMotor, rightMotor, imu)
-
-        Util.turnToAngle(90.toRadians(), this, leftMotor, rightMotor, imu)
-
-        Util.followPath(Util.goToCrater, this, leftMotor, rightMotor)
+        Util.turnToRelativeAngle(90.toRadians(), this, leftMotor, rightMotor, imu)
     }
+
+
 }

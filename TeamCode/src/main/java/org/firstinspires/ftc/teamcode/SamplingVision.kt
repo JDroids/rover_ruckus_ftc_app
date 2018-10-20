@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode
 
+/*
 import android.util.Log
 import com.acmerobotics.dashboard.config.Config
 import org.corningrobotics.enderbots.endercv.OpenCVPipeline
@@ -7,10 +8,10 @@ import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import org.opencv.core.Mat
 import java.lang.NullPointerException
+*/
 
-
-class SamplingVision : OpenCVPipeline() {
-    @Config
+class SamplingVision /*: OpenCVPipeline()*/ {
+    /*@Config
     object VisionConstants {
         @JvmField var yellowMinL = 120.0
         @JvmField var yellowMaxL = 255.0
@@ -18,7 +19,7 @@ class SamplingVision : OpenCVPipeline() {
         @JvmField var yellowMaxA = 154.0
         @JvmField var yellowMinB = 150.0
         @JvmField var yellowMaxB = 255.0
-    }
+    }*/
 
     enum class GoldPosition {
         LEFT,
@@ -26,7 +27,7 @@ class SamplingVision : OpenCVPipeline() {
         RIGHT,
         NONE
     }
-
+    /*
     var goldPosition: GoldPosition = GoldPosition.NONE
         private set
 
@@ -139,5 +140,5 @@ class SamplingVision : OpenCVPipeline() {
         //+whiteThresholded.release()
 
         return returnFrame
-    }
+    }*/
 }
