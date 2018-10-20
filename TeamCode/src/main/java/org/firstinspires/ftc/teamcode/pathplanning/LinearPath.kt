@@ -1,6 +1,4 @@
-package main
-
-import main.*
+package org.firstinspires.ftc.teamcode.pathplanning
 
 class LinearPath(val firstPoint: Waypoint, val secondPoint: Waypoint) : ConstantCurvaturePath {
     override val curvature = 0.0

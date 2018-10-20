@@ -1,6 +1,4 @@
-package main
-
-import main.*
+package org.firstinspires.ftc.teamcode.pathplanning
 
 data class MotionProfilingConstraints(val maximumVelocity: Double, val maximumAcceleration: Double)
 

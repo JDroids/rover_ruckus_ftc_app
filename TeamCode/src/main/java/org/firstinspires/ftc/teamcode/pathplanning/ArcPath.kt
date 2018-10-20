@@ -1,6 +1,4 @@
-package main
-
-import main.*
+package org.firstinspires.ftc.teamcode.pathplanning
 
 class ArcPath(val startPoint: Waypoint, val centerPoint: Waypoint, val endAngle: Double): ConstantCurvaturePath {
     private val radius = Math.sqrt(

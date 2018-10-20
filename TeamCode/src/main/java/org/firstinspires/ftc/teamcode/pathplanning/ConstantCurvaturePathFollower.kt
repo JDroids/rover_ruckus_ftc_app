@@ -1,6 +1,6 @@
-package main
+package org.firstinspires.ftc.teamcode.pathplanning
 
-import main.*
+import android.util.Log
 
 class ConstantCurvaturePathFollower
     (val path: ConstantCurvaturePath, val constraints: MotionProfilingConstraints, val statistics: DriveTrainStatistics) : PathFollower {
@@ -15,9 +15,8 @@ class ConstantCurvaturePathFollower
         val rightVelocity = when {
             t < timeToAccelerate -> constraints.maximumAcceleration * t
             t <= timeToCruise -> constraints.maximumVelocity
-            t <= timeToFollow -> ((constraints.maximumVelocity*constraints.maximumVelocity)/
-                (2.0*constraints.maximumAcceleration)) - 
-                (constraints.maximumAcceleration*t)
+            t <= timeToFollow -> constraints.maximumVelocity -
+                    (constraints.maximumAcceleration * (t - timeToCruise))
             else -> 0.0
         }
 

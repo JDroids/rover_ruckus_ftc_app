@@ -10,7 +10,7 @@ class VisionTest : OpMode() {
     private val vision = SamplingVision()
 
     override fun init() {
-        vision.init(hardwareMap.appContext, CameraViewDisplay.getInstance())
+        vision.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 1)
     }
 
     override fun start() {

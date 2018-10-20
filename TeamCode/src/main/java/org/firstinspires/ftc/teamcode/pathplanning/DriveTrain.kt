@@ -1,6 +1,4 @@
-package main
-
-import main.*
+package org.firstinspires.ftc.teamcode.pathplanning
 
 data class DriveTrainStatistics(val wheelRadius: Double, val wheelDistance: Double)
 

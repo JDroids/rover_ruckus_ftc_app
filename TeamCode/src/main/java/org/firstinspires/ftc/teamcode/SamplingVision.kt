@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
+import android.util.Log
+import com.acmerobotics.dashboard.config.Config
 import org.corningrobotics.enderbots.endercv.OpenCVPipeline
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
@@ -8,6 +10,16 @@ import java.lang.NullPointerException
 
 
 class SamplingVision : OpenCVPipeline() {
+    @Config
+    object VisionConstants {
+        @JvmField var yellowMinL = 120.0
+        @JvmField var yellowMaxL = 255.0
+        @JvmField var yellowMinA = 100.0
+        @JvmField var yellowMaxA = 154.0
+        @JvmField var yellowMinB = 150.0
+        @JvmField var yellowMaxB = 255.0
+    }
+
     enum class GoldPosition {
         LEFT,
         CENTER,
@@ -30,11 +42,12 @@ class SamplingVision : OpenCVPipeline() {
     override fun processFrame(rgba: Mat?, gray: Mat?): Mat {
         Imgproc.cvtColor(rgba, bgr, Imgproc.COLOR_RGBA2BGR)
 
-        Imgproc.blur(lab, lab, Size(3.0, 3.0))
-
         Imgproc.cvtColor(bgr, lab, Imgproc.COLOR_BGR2Lab)
 
-        Core.inRange(lab, Scalar(120.0, 100.0, 150.0), Scalar(255.0, 154.0, 255.0), yellowThresholded)
+        Core.inRange(lab,
+                Scalar(VisionConstants.yellowMinL, VisionConstants.yellowMinA, VisionConstants.yellowMinB),
+                Scalar(VisionConstants.yellowMaxL, VisionConstants.yellowMaxA, VisionConstants.yellowMaxB),
+                yellowThresholded)
         Core.inRange(lab, Scalar(170.0, 97.0, 97.0), Scalar(255.0, 157.0, 157.0), whiteThresholded)
 
         yellowContours.clear()
@@ -42,6 +55,9 @@ class SamplingVision : OpenCVPipeline() {
 
         Imgproc.findContours(yellowThresholded, yellowContours, Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE)
         Imgproc.findContours(whiteThresholded, whiteContours, Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE)
+
+        val returnFrame = yellowThresholded
+        Imgproc.cvtColor(returnFrame, returnFrame, Imgproc.COLOR_GRAY2BGR)
 
         yellowContours.sortBy { point -> Imgproc.contourArea(point) }
         whiteContours.sortBy { point -> Imgproc.contourArea(point) }
@@ -62,10 +78,10 @@ class SamplingVision : OpenCVPipeline() {
 
             if (contourArea <= maxArea && contourArea >= minArea &&
                     contourArea / boundingArea >= 0.7 && widthOverHeight >= 0.8 &&
-                    widthOverHeight <= 1.5) {
+                    widthOverHeight <= 1.2) {
                 yellowCenterX = boundingRect.x + (boundingRect.width / 2)
 
-                Imgproc.rectangle(rgba,
+                Imgproc.rectangle(returnFrame,
                         Point(boundingRect.x.toDouble(), boundingRect.y.toDouble()),
                         Point(boundingRect.x+boundingRect.width.toDouble(),
                                 boundingRect.x+boundingRect.height.toDouble()),
@@ -94,7 +110,7 @@ class SamplingVision : OpenCVPipeline() {
                     widthOverHeight <= 1.7) {
                 whiteCenterXs[foundContours] = boundingRect.x + (boundingRect.width / 2)
 
-                Imgproc.rectangle(rgba,
+                Imgproc.rectangle(returnFrame,
                         Point(boundingRect.x.toDouble(), boundingRect.y.toDouble()),
                         Point(boundingRect.x+boundingRect.width.toDouble(),
                                 boundingRect.x+boundingRect.height.toDouble()),
@@ -122,6 +138,6 @@ class SamplingVision : OpenCVPipeline() {
         //yellowThresholded.release()
         //+whiteThresholded.release()
 
-        return rgba ?: throw NullPointerException()
+        return returnFrame
     }
 }
