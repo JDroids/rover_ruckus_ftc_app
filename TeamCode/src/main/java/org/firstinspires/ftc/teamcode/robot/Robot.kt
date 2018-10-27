@@ -1,8 +1,16 @@
 package org.firstinspires.ftc.teamcode.robot
 
-import com.jdroids.robotlib.command.RobotTemplate
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.robot.subsystems.Drive
+import org.firstinspires.ftc.teamcode.robot.subsystems.Hang
+import kotlin.properties.Delegates
 
-object Robot : RobotTemplate() {
+object Robot {
     val drive = Drive()
+    val hang = Hang()
+
+    fun initHardware(opMode: OpMode) {
+        drive.opMode = opMode
+        hang.opMode = opMode
+    }
 }

@@ -18,8 +18,8 @@ class TurnTest : LinearOpMode() {
     override fun runOpMode() {
         leftMotor.direction = DcMotorSimple.Direction.REVERSE
 
-        leftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        rightMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
         Util.initializeIMU(imu)
 

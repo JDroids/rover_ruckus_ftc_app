@@ -4,9 +4,6 @@ import com.acmerobotics.dashboard.config.Config
 import com.disnodeteam.dogecv.CameraViewDisplay
 import com.disnodeteam.dogecv.DogeCV
 import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector
-import com.jdroids.robotlib.pid.PIDInterface
-import com.jdroids.robotlib.pid.SimplePIDController
-import com.jdroids.robotlib.util.Boundary
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -52,15 +49,15 @@ object Util {
 
     fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor, hookServo: Servo,
              tofSensor: Rev2mDistanceSensor) {
-        hangMotor1.power = -+0.5
+        hangMotor1.power = -0.5
         hangMotor2.power = -0.5
 
-        while (tofSensor.getDistance(DistanceUnit.INCH) > 1.6 && opMode.opModeIsActive()) {
+        while (tofSensor.getDistance(DistanceUnit.INCH) > 1.8 && opMode.opModeIsActive()) {
             opMode.telemetry.addData("TOFSensor", tofSensor.getDistance(DistanceUnit.INCH))
             opMode.telemetry.update()
         }
 
-        opMode.sleep(600)
+        opMode.sleep(350)
 
         hangMotor1.power = 0.0
         hangMotor2.power = 0.0
@@ -68,6 +65,10 @@ object Util {
         setHookState(HookState.OPENED, hookServo)
 
         opMode.sleep(500)
+    }
+
+    fun claim() {
+
     }
 
     enum class HookState {
@@ -188,7 +189,7 @@ object Util {
 
         var current = imu.getRadians()
 
-        while (Math.abs(current - angle) < 3.toRadians() && opMode.opModeIsActive()) {
+        while (/*Math.abs(current - angle) < 3.toRadians() &&*/ opMode.opModeIsActive()) {
             current = imu.getRadians()
 
             val output = pid.calculateOutput(angle, current)
@@ -198,6 +199,8 @@ object Util {
 
             opMode.telemetry.addData("Output", output)
             opMode.telemetry.addData("Error", current - angle)
+            opMode.telemetry.addData("Left Motor Power", leftMotor.power)
+            opMode.telemetry.addData("Right Motor Power", rightMotor.power)
             opMode.telemetry.update()
         }
 

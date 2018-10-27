@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.Util.toRadians
 import org.firstinspires.ftc.teamcode.pathplanning.*
 
-@Autonomous(name="CraterAuto")
+@Autonomous(name="Get Down")
 class CraterAutonomous : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
@@ -41,12 +41,12 @@ class CraterAutonomous : LinearOpMode() {
         leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
-        Util.initializeIMU(imu)
+        //Util.initializeIMU(imu)
 
-        val goldPosition = SamplingVision.GoldPosition.CENTER //Util.doVision(hardwareMap)
+        //val goldPosition = SamplingVision.GoldPosition.CENTER //Util.doVision(hardwareMap)
 
-        Util.followPath(LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 1.5)),
-                this, leftMotor, rightMotor)
+        //Util.followPath(LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 1.5)),
+        //        this, leftMotor, rightMotor)
 
         //Util.hitSample(goldPosition, this, leftMotor, rightMotor, imu)
         /*
