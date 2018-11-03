@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import com.jdroids.robotlib.util.getNameOfHardwareDevice
+//import com.jdroids.robotlib.util.getNameOfHardwareDevice
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.Util
-
+/*
 @Disabled
 @Autonomous(name="LandTest")
 class LandTest : LinearOpMode() {
@@ -27,4 +27,4 @@ class LandTest : LinearOpMode() {
 
         Util.land(this, hangMotor1, hangMotor2, hangServo, hangTOFSensor)
     }
-}
+}*/

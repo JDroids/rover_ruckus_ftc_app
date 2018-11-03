@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.Util.toRadians
-
+/*
 @Autonomous(name="DepotAuto")
 class DepotAutonomous : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
@@ -36,4 +36,4 @@ class DepotAutonomous : LinearOpMode() {
 
         Util.followPath(Util.goToCrater, this, leftMotor, rightMotor)
     }
-}
+}*/

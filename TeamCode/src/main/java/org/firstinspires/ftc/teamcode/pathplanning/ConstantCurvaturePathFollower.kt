@@ -1,13 +1,22 @@
 package org.firstinspires.ftc.teamcode.pathplanning
 
-import android.util.Log
-
 class ConstantCurvaturePathFollower
     (val path: ConstantCurvaturePath, val constraints: MotionProfilingConstraints, val statistics: DriveTrainStatistics) : PathFollower {
 
-    private val timeToAccelerate = (constraints.maximumVelocity/constraints.maximumAcceleration)
+    private fun cartesianDistance(point1: Waypoint, point2: Waypoint) =
+            Math.sqrt(
+                    Math.pow(point2.x - point1.x, 2.0) +
+                    Math.pow(point2.y - point1.y, 2.0)
+            )
 
-    override val timeToFollow = timeToAccelerate + (path.length/constraints.maximumVelocity)
+    private val maxVelocityAchieved =
+            if (cartesianDistance(path.generate(0.0), path.generate(0.5)) <
+                    constraints.maximumVelocity) cartesianDistance(path.generate(0.0),
+                    path.generate(0.5)) else constraints.maximumVelocity
+
+    private val timeToAccelerate = maxVelocityAchieved/constraints.maximumAcceleration
+
+    override val timeToFollow = timeToAccelerate + (path.length/maxVelocityAchieved)
 
     private val timeToCruise = timeToFollow - timeToAccelerate
 

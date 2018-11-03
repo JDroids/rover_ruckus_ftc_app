@@ -1,19 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.teamcode.SamplingVision
+import com.qualcomm.robotcore.hardware.*
+//import org.firstinspires.ftc.teamcode.SamplingVision
 import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.Util.toRadians
 import org.firstinspires.ftc.teamcode.pathplanning.*
 
-@Autonomous(name="Get Down")
+@Autonomous(name="Crater Auto")
 class CraterAutonomous : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
@@ -23,8 +21,13 @@ class CraterAutonomous : LinearOpMode() {
     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
     private val hangServo by lazy {hardwareMap!!.get(Servo::class.java, "hangServo")}
 
+    private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "depotServo")}
+
     private val hangTOFSensor by lazy {
         hardwareMap!!.get(Rev2mDistanceSensor::class.java, "tofSensor")}
+
+    private val frontUltrasonic
+            by lazy {hardwareMap!!.get(ModernRoboticsI2cRangeSensor::class.java, "rangeFront")}
 
     override fun runOpMode() {
         leftMotor.direction = DcMotorSimple.Direction.REVERSE
@@ -41,31 +44,43 @@ class CraterAutonomous : LinearOpMode() {
         leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
-        //Util.initializeIMU(imu)
+        leftMotor.power = -1.0
+        rightMotor.power = -1.0
 
-        //val goldPosition = SamplingVision.GoldPosition.CENTER //Util.doVision(hardwareMap)
+        sleep(300)
 
-        //Util.followPath(LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 1.5)),
-        //        this, leftMotor, rightMotor)
+        leftMotor.power = 0.0
+        rightMotor.power = 0.0
 
-        //Util.hitSample(goldPosition, this, leftMotor, rightMotor, imu)
-        /*
-        Util.followPath(LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 0.25)),
-                this, leftMotor, rightMotor, true)
+        sleep(100)
 
-        Util.turnToAngle(80.toRadians(), this, leftMotor, rightMotor, imu)
+        Util.setHookState(Util.HookState.OPENED, hangServo)
 
-        Util.followPath(LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 1.5)),
-                this, leftMotor, rightMotor)
+        sleep(200)
 
-        Util.turnToAngle(135.toRadians(), this, leftMotor, rightMotor, imu)
+        Util.initializeIMU(imu)
 
-        Util.followPath(LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 6.25)),
-                this, leftMotor, rightMotor)
+        Util.moveFeet(2.5, this, leftMotor, rightMotor)
 
-        //Deposit marker here
+        sleep(100)
 
-        Util.followPath(LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 6.5)),
-                this, leftMotor, rightMotor, true)*/
+        Util.turnTime(1500, -0.3, this, leftMotor, rightMotor)
+
+        Util.moveFeet(3.3, this, leftMotor, rightMotor)
+
+        Util.turnTime(800, -0.3, this, leftMotor, rightMotor)
+
+        Util.moveFeet(3.9, this, leftMotor, rightMotor)
+
+        Util.turnTime(600, 0.3, this, leftMotor, rightMotor)
+
+        Util.setMarkerState(Util.MarkerState.OPENED, markerServo)
+
+        Util.turnTime(500, -0.3, this, leftMotor, rightMotor)
+
+        Util.moveFeet(-8.5, this, leftMotor, rightMotor)
+
+        sleep(100)
+
     }
 }

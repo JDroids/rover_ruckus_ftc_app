@@ -1,22 +1,21 @@
 package org.firstinspires.ftc.teamcode
 
 import com.acmerobotics.dashboard.config.Config
-import com.disnodeteam.dogecv.CameraViewDisplay
-import com.disnodeteam.dogecv.DogeCV
-import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector
+//import com.disnodeteam.dogecv.CameraViewDisplay
+//import com.disnodeteam.dogecv.DogeCV
+//import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.PIDCoefficients
-import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.pathplanning.*
+import kotlin.math.roundToInt
 
 object Util {
     fun Number.toRadians() = this.toDouble() * (Math.PI/180)
@@ -57,7 +56,7 @@ object Util {
             opMode.telemetry.update()
         }
 
-        opMode.sleep(350)
+        opMode.sleep(30)
 
         hangMotor1.power = 0.0
         hangMotor2.power = 0.0
@@ -78,12 +77,24 @@ object Util {
 
     fun setHookState(state: HookState, servo: Servo) {
         servo.position = when (state) {
-            HookState.LATCHED -> 0.0
-            HookState.OPENED -> 1.0
+            HookState.LATCHED -> 0.7
+            HookState.OPENED -> 0.0
         }
     }
 
-    fun doVision(hardwareMap: HardwareMap): SamplingVision.GoldPosition {
+    enum class MarkerState {
+        HOLDING,
+        OPENED
+    }
+
+    fun setMarkerState(state: MarkerState, servo: Servo) {
+        servo.position = when (state) {
+            MarkerState.HOLDING -> 0.7
+            MarkerState.OPENED -> 0.0
+        }
+    }
+
+    /*fun doVision(hardwareMap: HardwareMap): SamplingVision.GoldPosition {
         val detector = SamplingOrderDetector()
 
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 1,
@@ -107,9 +118,9 @@ object Util {
             SamplingOrderDetector.GoldLocation.RIGHT -> SamplingVision.GoldPosition.RIGHT
             null -> throw NullPointerException()
         }
-    }
+    }*/
 
-    fun hitSampleAndDepositMarker(samplePosition: SamplingVision.GoldPosition, opMode: LinearOpMode,
+   /* fun hitSampleAndDepositMarker(samplePosition: SamplingVision.GoldPosition, opMode: LinearOpMode,
                                   leftMotor: DcMotor, rightMotor: DcMotor, imu: BNO055IMU) {
         hitSample(samplePosition, opMode, leftMotor, rightMotor, imu)
 
@@ -134,7 +145,7 @@ object Util {
             }, opMode, leftMotor, rightMotor, imu)
         */
         followPath(hitSample, opMode, leftMotor, rightMotor)
-    }
+    }*/
 
     fun followPath(path: ConstantCurvaturePath, opMode: LinearOpMode, leftMotor: DcMotor, rightMotor: DcMotor, reversed:Boolean=false) {
         val follower = ConstantCurvaturePathFollower(path, constraints, statistics)
@@ -155,6 +166,7 @@ object Util {
     }
 
     fun encoderTicksToFeet(ticks: Int) = ((ticks/1120.0) * 4 * Math.PI) / 12
+    fun feetToEncoderTicks(feet: Double) = ((1120.0*12.0*feet) / (4 * Math.PI)).roundToInt()
 
     data class Position(val waypoint: Waypoint, val angle: Double)
 
@@ -175,9 +187,41 @@ object Util {
 
     @Config
     object TurningPIDCoefficients {
-        @JvmField var p = 0.03
+        @JvmField var p = 0.05
         @JvmField var i = 0.0
         @JvmField var d = 0.0
+    }
+
+    fun moveFeet(feet: Double, opMode: LinearOpMode, leftMotor: DcMotor, rightMotor: DcMotor) {
+        val ticks = feetToEncoderTicks(feet)
+
+        leftMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        rightMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        leftMotor.targetPosition = leftMotor.currentPosition + ticks
+        rightMotor.targetPosition = rightMotor.currentPosition + ticks
+
+        leftMotor.power = 1.0
+        rightMotor.power = 1.0
+
+        while ((leftMotor.isBusy || rightMotor.isBusy) && opMode.opModeIsActive()) { }
+
+        leftMotor.power = 0.0
+        rightMotor.power = 0.0
+
+        leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+    }
+
+    fun turnTime(ms: Long, power: Double, opMode: LinearOpMode,
+                           leftMotor: DcMotor, rightMotor: DcMotor) {
+        leftMotor.power = power
+        rightMotor.power = -power
+
+        opMode.sleep(ms)
+
+        leftMotor.power = 0.0
+        rightMotor.power = 0.0
     }
 
     fun turnToAngle(angle: Double, opMode: LinearOpMode,
@@ -189,7 +233,7 @@ object Util {
 
         var current = imu.getRadians()
 
-        while (/*Math.abs(current - angle) < 3.toRadians() &&*/ opMode.opModeIsActive()) {
+        while (Math.abs(current - angle) > 7.toRadians() && opMode.opModeIsActive()) {
             current = imu.getRadians()
 
             val output = pid.calculateOutput(angle, current)
@@ -211,5 +255,23 @@ object Util {
     fun turnToRelativeAngle(angle: Double, opMode: LinearOpMode,
                     leftMotor: DcMotor, rightMotor: DcMotor, imu: BNO055IMU) {
         turnToAngle(angle + imu.getRadians(), opMode, leftMotor, rightMotor, imu)
+    }
+
+    fun getToDistanceWithDistanceSensor(inches: Double, linearOpMode: LinearOpMode,
+                                        sensor: DistanceSensor, leftMotor: DcMotor,
+                                        rightMotor: DcMotor) {
+        while (linearOpMode.opModeIsActive()) {
+            if (sensor.getDistance(DistanceUnit.INCH) - inches < 2) {
+                leftMotor.power = -0.4
+                rightMotor.power = -0.4
+            }
+            else if(sensor.getDistance(DistanceUnit.INCH) - inches > 2) {
+                leftMotor.power = 0.4
+                rightMotor.power = 0.4
+            }
+            else {
+                break
+            }
+        }
     }
 }

@@ -4,7 +4,6 @@ dependencies {
     implementation (name: 'Hardware-release', ext: 'aar')
     implementation (name: 'FtcCommon-release', ext: 'aar')
     implementation (name:'WirelessP2p-release', ext:'aar')
-    implementation project(':DogeCV')
     implementation project(':robotlib')
     implementation 'com.acmerobotics.dashboard:dashboard:0.2.0'
 }

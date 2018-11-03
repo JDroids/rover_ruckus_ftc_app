@@ -22,7 +22,6 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(':robotlib')
-    //implementation project(':endercv')
     implementation project(':DogeCV')
     implementation project(':openCVLibrary3')
 }

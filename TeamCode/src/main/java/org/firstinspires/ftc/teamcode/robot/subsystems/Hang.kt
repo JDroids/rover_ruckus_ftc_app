@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.subsystems
 
+import com.jdroids.robotlib.command.SchedulerImpl
 import com.jdroids.robotlib.command.Subsystem
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -7,6 +8,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 
 class Hang : Subsystem {
+    init {
+        SchedulerImpl.register(this)
+    }
+
     lateinit var opMode: OpMode
 
     private val hangMotor1 by lazy {opMode.hardwareMap.get(DcMotorEx::class.java, "hang1")}

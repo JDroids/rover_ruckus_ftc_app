@@ -12,5 +12,8 @@ object Robot {
     fun initHardware(opMode: OpMode) {
         drive.opMode = opMode
         hang.opMode = opMode
+
+        drive.initHardware()
+        hang.initHardware()
     }
 }

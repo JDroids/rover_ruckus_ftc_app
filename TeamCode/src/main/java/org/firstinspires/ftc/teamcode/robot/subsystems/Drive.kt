@@ -43,7 +43,6 @@ class Drive : Subsystem {
                 motorVelocity.rightVelocity / wheelCircumference / Math.PI * 2,
                 AngleUnit.RADIANS)
 
-
         opMode.telemetry.addData("Motor Velocity", motorVelocity)
         opMode.telemetry.addData("Left Power", leftMotor.velocity)
         opMode.telemetry.addData("Right Power", rightMotor.velocity)
