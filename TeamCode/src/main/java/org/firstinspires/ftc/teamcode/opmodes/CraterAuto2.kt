@@ -34,7 +34,7 @@ class CraterAuto2 : LinearOpMode() {
             turnToGold.end()
         }
 
-        SchedulerImpl.clearRequirements(turnToGold)
+        SchedulerImpl.clearSubsystemRequirements(turnToGold)
 
         val hitGold = FollowConstantCurvaturePath(
                 LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 2.0)))
@@ -54,6 +54,6 @@ class CraterAuto2 : LinearOpMode() {
             hitGold.end()
         }
 
-        SchedulerImpl.clearRequirements(hitGold)
+        SchedulerImpl.clearSubsystemRequirements(hitGold)
     }
 }

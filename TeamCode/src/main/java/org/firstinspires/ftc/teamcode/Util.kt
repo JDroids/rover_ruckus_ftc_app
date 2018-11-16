@@ -48,15 +48,15 @@ object Util {
 
     fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor, hookServo: Servo,
              tofSensor: Rev2mDistanceSensor) {
-        hangMotor1.power = -0.5
-        hangMotor2.power = -0.5
+        hangMotor1.power = 0.5
+        hangMotor2.power = 0.5
 
         while (tofSensor.getDistance(DistanceUnit.INCH) > 1.8 && opMode.opModeIsActive()) {
             opMode.telemetry.addData("TOFSensor", tofSensor.getDistance(DistanceUnit.INCH))
             opMode.telemetry.update()
         }
 
-        opMode.sleep(30)
+        opMode.sleep(25)
 
         hangMotor1.power = 0.0
         hangMotor2.power = 0.0

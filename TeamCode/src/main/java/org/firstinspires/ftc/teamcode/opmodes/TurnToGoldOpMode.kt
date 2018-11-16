@@ -23,13 +23,6 @@ class TurnToGoldOpMode : LinearOpMode() {
             telemetry.update()
         }
 
-        if (turnToGold.isCompleted()) {
-            SchedulerImpl.periodic()
-        }
-        else {
-            turnToGold.end()
-        }
-
-        SchedulerImpl.clearRequirements(turnToGold)
+        turnToGold.interrupt()
     }
 }
