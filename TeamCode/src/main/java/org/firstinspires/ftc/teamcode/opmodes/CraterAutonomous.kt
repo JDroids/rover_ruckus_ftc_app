@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.*
 //import org.firstinspires.ftc.teamcode.SamplingVision
@@ -11,7 +12,8 @@ import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.Util.toRadians
 import org.firstinspires.ftc.teamcode.pathplanning.*
 
-@Autonomous(name="Crater Auto")
+@Disabled
+@Autonomous(name="Crater Auto old")
 class CraterAutonomous : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
@@ -23,8 +25,8 @@ class CraterAutonomous : LinearOpMode() {
 
     private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "depotServo")}
 
-    private val hangTOFSensor by lazy {
-        hardwareMap!!.get(Rev2mDistanceSensor::class.java, "tofSensor")}
+    private val hangSensor by lazy {
+        hardwareMap!!.get(DigitalChannel::class.java, "hangSensor")}
 
     private val frontUltrasonic
             by lazy {hardwareMap!!.get(ModernRoboticsI2cRangeSensor::class.java, "rangeFront")}
@@ -39,7 +41,7 @@ class CraterAutonomous : LinearOpMode() {
 
         waitForStart()
 
-        Util.land(this, hangMotor1, hangMotor2, hangServo, hangTOFSensor)
+        Util.land(this, hangMotor1, hangMotor2, hangSensor)
 
         leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
@@ -53,8 +55,6 @@ class CraterAutonomous : LinearOpMode() {
         rightMotor.power = 0.0
 
         sleep(100)
-
-        Util.setHookState(Util.HookState.OPENED, hangServo)
 
         sleep(200)
 

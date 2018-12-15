@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes
+/*package org.firstinspires.ftc.teamcode.opmodes
 
 import com.jdroids.robotlib.command.SchedulerImpl
 import com.jdroids.robotlib.command.SequentialCommandGroup
@@ -27,7 +27,7 @@ class SamplingTest : LinearOpMode() {
 
         waitForStart()
 
-        Util.land(this, hangMotor1, hangMotor2, hangServo, hangTOFSensor)
+        Util.land(this, hangMotor1, hangMotor2, hangTOFSensor)
 
         val turnToGold = TurnToGold(this)
 
@@ -46,4 +46,4 @@ class SamplingTest : LinearOpMode() {
             turnToGold.interrupt()
         }
     }
-}
+}*/

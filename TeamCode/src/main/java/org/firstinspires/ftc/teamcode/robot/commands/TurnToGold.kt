@@ -5,8 +5,10 @@ import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
 import com.jdroids.robotlib.command.Command
 import com.jdroids.robotlib.command.SchedulerImpl
+import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.PIDCoefficients
+import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
@@ -23,7 +25,7 @@ class TurnToGold(private val opMode: OpMode) : Command {
 
     @Config
     object TurnCoefficients {
-        @JvmField var TURNING_PID = PIDCoefficients(25.0, 0.0, -1.0)
+        @JvmField var TURNING_PID = PIDCoefficients(-25.0, 0.0, -1.0)
     }
 
     private val TFOD_MODEL_ASSET = "RoverRuckus.tflite"
@@ -32,6 +34,8 @@ class TurnToGold(private val opMode: OpMode) : Command {
     private val tfod = getTfod(getVuforia())
 
     private val pid = JankPID()
+
+    private val timer = ElapsedTime()
 
     /*private val pid = PIDControllerImpl(
         {goldAngle},
@@ -44,25 +48,43 @@ class TurnToGold(private val opMode: OpMode) : Command {
 
     override fun start() {
         tfod.activate()
+        timer.reset()
     }
 
     private var goldAngle = -1.0
 
-    override fun periodic() {
-        pid.setCoeffecients(
-                TurnCoefficients.TURNING_PID.p, TurnCoefficients.TURNING_PID.i, TurnCoefficients.TURNING_PID.d)
+    private var isFirstTimeDetected = true
 
+    override fun periodic() {
         val recognitions = tfod.updatedRecognitions
 
         if (recognitions != null) {
             for (recognition in recognitions) {
                 if (recognition.label == GOLD_MINERAL_LABEL) {
                     goldAngle = recognition.estimateAngleToObject(AngleUnit.RADIANS)
+
+                    if (isFirstTimeDetected) {
+                        isFirstTimeDetected = false
+                    }
                 }
             }
         }
 
-        val result = if (goldAngle != -1.0) pid.calculateOutput(0.0, goldAngle) else 0.0
+        val coefficient = TurnCoefficients.TURNING_PID.p
+
+        var result = if (goldAngle != -1.0) goldAngle * coefficient else 0.0
+
+        if (goldAngle == -1.0) {
+            if (timer.seconds() >= 8) {
+                timer.reset()
+            }
+            else if (timer.seconds() >= 4) {
+                result = 4.0
+            }
+            else if (timer.seconds() >= 2) {
+                result = -4.0
+            }
+        }
 
         Robot.drive.motorVelocity = MotorVelocity(-result, result)
 
@@ -74,7 +96,8 @@ class TurnToGold(private val opMode: OpMode) : Command {
     }
 
     override fun end() {
-        tfod.shutdown()
+        if (tfod != null) tfod.shutdown()
+
         Robot.drive.motorVelocity = MotorVelocity(0.0, 0.0)
 
         Log.d("TurnToGold", "End called")
@@ -88,7 +111,7 @@ class TurnToGold(private val opMode: OpMode) : Command {
     override fun isCompleted() = Math.abs(goldAngle) < 0.1
 
 
-    override fun isInterruptible() = false
+    override fun isInterruptible() = true
 
     private fun getTfod(vuforia: VuforiaLocalizer) : TFObjectDetector {
         val tfodMonitorViewId = opMode.hardwareMap.appContext.resources.getIdentifier(

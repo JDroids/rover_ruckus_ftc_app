@@ -46,24 +46,19 @@ object Util {
         imu.initialize(parameters)
     }
 
-    fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor, hookServo: Servo,
-             tofSensor: Rev2mDistanceSensor) {
-        hangMotor1.power = 0.5
-        hangMotor2.power = 0.5
+    fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor,
+             magnetSensor: DigitalChannel) {
+        hangMotor1.power = 0.9
+        hangMotor2.power = 0.9
 
-        while (tofSensor.getDistance(DistanceUnit.INCH) > 1.8 && opMode.opModeIsActive()) {
-            opMode.telemetry.addData("TOFSensor", tofSensor.getDistance(DistanceUnit.INCH))
+        while (magnetSensor.state && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("Magnet State", magnetSensor.state)
             opMode.telemetry.update()
         }
-
-        opMode.sleep(25)
 
         hangMotor1.power = 0.0
         hangMotor2.power = 0.0
 
-        setHookState(HookState.OPENED, hookServo)
-
-        opMode.sleep(500)
     }
 
     fun claim() {
@@ -73,13 +68,6 @@ object Util {
     enum class HookState {
         LATCHED,
         OPENED
-    }
-
-    fun setHookState(state: HookState, servo: Servo) {
-        servo.position = when (state) {
-            HookState.LATCHED -> 0.7
-            HookState.OPENED -> 0.0
-        }
     }
 
     enum class MarkerState {

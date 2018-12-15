@@ -24,7 +24,7 @@ class TeleOp : OpMode() {
     override fun init() {
         leftMotor.direction = DcMotorSimple.Direction.REVERSE
 
-        hangMotor2.direction = DcMotorSimple.Direction.REVERSE
+        hangMotor1.direction = DcMotorSimple.Direction.REVERSE
 
         leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
@@ -35,22 +35,17 @@ class TeleOp : OpMode() {
     override fun loop() {
         when {
             gamepad1.left_bumper -> {
-                hangMotor1.power = hangMotorPower
-                hangMotor2.power = hangMotorPower
-            }
-            gamepad1.right_bumper -> {
                 hangMotor1.power = -hangMotorPower
                 hangMotor2.power = -hangMotorPower
+            }
+            gamepad1.right_bumper -> {
+                hangMotor1.power = hangMotorPower
+                hangMotor2.power = hangMotorPower
             }
             else -> {
                 hangMotor1.power = 0.0
                 hangMotor2.power = 0.0
             }
-        }
-
-        when {
-            gamepad1.a -> Util.setHookState(Util.HookState.LATCHED, hangServo)
-            gamepad1.b -> Util.setHookState(Util.HookState.OPENED, hangServo)
         }
 
         curvatureDrive(squareWithSign(-gamepad1.left_stick_y.toDouble()),

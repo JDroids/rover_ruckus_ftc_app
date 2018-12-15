@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.Util.getRadians
 import org.firstinspires.ftc.teamcode.robot.Robot
 import org.firstinspires.ftc.teamcode.robot.commands.TurnToGold
 
-@Autonomous(name="Crater Auto")
-class CraterAuto2 : LinearOpMode() {
+@Autonomous(name="Depot Auto")
+class DepotAuto : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
 
@@ -55,9 +55,17 @@ class CraterAuto2 : LinearOpMode() {
 
         Util.moveFeet(-3.2, this, leftMotor, rightMotor)
 
+        turnToAngle(-Math.PI)
+
+        Util.moveFeet(-1.0, this, leftMotor, rightMotor)
+
+        Util.moveFeet(1.3, this, leftMotor, rightMotor)
+
         sleep(100)
 
-        // Util.moveFeet(1.8, this, leftMotor, rightMotor)
+        markerServo.position = 0.0
+        sleep(2000)
+
         /*
         val turnTime = when {
             angle > (-3.0/2) * Math.PI -> 1850
