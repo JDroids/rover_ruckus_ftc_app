@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
+import com.jdroids.robotlib.command.SchedulerImpl
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -7,12 +8,12 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.Util
+import org.firstinspires.ftc.teamcode.pathplanning.MotorVelocity
+import org.firstinspires.ftc.teamcode.robot.Robot
+import org.firstinspires.ftc.teamcode.robot.subsystems.Drive
 
 @TeleOp(name="TeleOp")
 class TeleOp : OpMode() {
-    private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
-    private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
-
     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
 
@@ -22,12 +23,9 @@ class TeleOp : OpMode() {
         if (value < 0) Math.pow(value, 2.0) else -Math.pow(value, 2.0)
 
     override fun init() {
-        leftMotor.direction = DcMotorSimple.Direction.REVERSE
+        Robot.initHardware(this)
 
         hangMotor1.direction = DcMotorSimple.Direction.REVERSE
-
-        leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     val hangMotorPower = 0.9
@@ -48,12 +46,17 @@ class TeleOp : OpMode() {
             }
         }
 
-        curvatureDrive(squareWithSign(-gamepad1.left_stick_y.toDouble()),
+        Robot.drive.motorVelocity = curvatureDrive(
+                squareWithSign(-gamepad1.left_stick_y.toDouble()),
                 squareWithSign(gamepad1.right_stick_x.toDouble()),
-                gamepad1.right_stick_button)
+                gamepad1.right_stick_button
+        )
+
+        SchedulerImpl.periodic()
     }
 
-    private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) {
+    private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) :
+            MotorVelocity {
         val angularPower = if (isQuickTurn) {
             -zRotation
         }
@@ -84,10 +87,9 @@ class TeleOp : OpMode() {
                 rightMotorOutput = -1.0
             }
         }
-
-        leftMotor.power = leftMotorOutput
-        rightMotor.power = rightMotorOutput
-        telemetry.addData("LeftMotorOutput", leftMotorOutput)
-        telemetry.addData("RightMotorOutput", rightMotorOutput)
+        return MotorVelocity(
+                rightMotorOutput * Robot.drive.constraints.maximumVelocity,
+                leftMotorOutput * Robot.drive.constraints.maximumVelocity
+        )
     }
 }

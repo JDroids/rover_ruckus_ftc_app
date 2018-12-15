@@ -117,8 +117,6 @@ class DepotAuto : LinearOpMode() {
         else {
             command.end()
         }
-
-        SchedulerImpl.clearSubsystemRequirements(command)
     }
 
     fun turnToAngle(target: Double) {

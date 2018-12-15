@@ -29,8 +29,6 @@ class TurnToGoldOpMode : LinearOpMode() {
             telemetry.update()
         }
 
-        turnToGold.interrupt()
-
         leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 

@@ -7,12 +7,6 @@ import org.firstinspires.ftc.teamcode.pathplanning.*
 import org.firstinspires.ftc.teamcode.robot.Robot
 
 class FollowConstantCurvaturePath(path: ConstantCurvaturePath) : Command {
-    override fun isInterruptible() = false
-
-    override fun interrupt() {
-        end()
-    }
-
     override fun isCompleted() = elapsedTime.seconds() > constantCurvaturePathFollower.timeToFollow
 
 
@@ -22,7 +16,6 @@ class FollowConstantCurvaturePath(path: ConstantCurvaturePath) : Command {
     private val elapsedTime = ElapsedTime()
 
     override fun start() {
-        SchedulerImpl.requires(this, Robot.drive)
         elapsedTime.reset()
     }
 

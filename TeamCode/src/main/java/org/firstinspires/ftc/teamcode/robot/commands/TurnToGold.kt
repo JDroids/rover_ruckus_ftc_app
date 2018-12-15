@@ -19,10 +19,6 @@ import org.firstinspires.ftc.teamcode.pathplanning.MotorVelocity
 import org.firstinspires.ftc.teamcode.robot.Robot
 
 class TurnToGold(private val opMode: OpMode) : Command {
-    init {
-        SchedulerImpl.requires(this, Robot.drive)
-    }
-
     @Config
     object TurnCoefficients {
         @JvmField var TURNING_PID = PIDCoefficients(-25.0, 0.0, -1.0)
@@ -103,15 +99,7 @@ class TurnToGold(private val opMode: OpMode) : Command {
         Log.d("TurnToGold", "End called")
     }
 
-    override fun interrupt() {
-        SchedulerImpl.clearSubsystemRequirements(this)
-        end()
-    }
-
     override fun isCompleted() = Math.abs(goldAngle) < 0.1
-
-
-    override fun isInterruptible() = true
 
     private fun getTfod(vuforia: VuforiaLocalizer) : TFObjectDetector {
         val tfodMonitorViewId = opMode.hardwareMap.appContext.resources.getIdentifier(

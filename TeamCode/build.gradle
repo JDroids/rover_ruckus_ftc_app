@@ -24,4 +24,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation project(':robotlib')
     implementation project(':openCVLibrary3')
+    implementation 'org.openftc:rev-extensions-2:1.1'
 }
