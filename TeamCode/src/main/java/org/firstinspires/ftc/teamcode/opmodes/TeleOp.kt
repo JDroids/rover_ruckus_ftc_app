@@ -17,13 +17,22 @@ class TeleOp : OpMode() {
     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
 
-    private val hangServo by lazy {hardwareMap!!.get(Servo::class.java, "hangServo")}
+    private val leftFrontMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "lf")}
+    private val leftBackMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "lb")}
 
-    private fun squareWithSign(value: Double) =
-        if (value < 0) Math.pow(value, 2.0) else -Math.pow(value, 2.0)
+    private val rightFrontMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "rf")}
+    private val rightBackMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "rb")}
 
     override fun init() {
-        Robot.initHardware(this)
+        leftFrontMotor
+        leftBackMotor
+
+        rightFrontMotor.direction = DcMotorSimple.Direction.REVERSE
+        rightBackMotor.direction = DcMotorSimple.Direction.REVERSE
 
         hangMotor1.direction = DcMotorSimple.Direction.REVERSE
     }
@@ -33,12 +42,12 @@ class TeleOp : OpMode() {
     override fun loop() {
         when {
             gamepad1.left_bumper -> {
-                hangMotor1.power = -hangMotorPower
-                hangMotor2.power = -hangMotorPower
-            }
-            gamepad1.right_bumper -> {
                 hangMotor1.power = hangMotorPower
                 hangMotor2.power = hangMotorPower
+            }
+            gamepad1.right_bumper -> {
+                hangMotor1.power = -hangMotorPower
+                hangMotor2.power = -hangMotorPower
             }
             else -> {
                 hangMotor1.power = 0.0
@@ -46,22 +55,19 @@ class TeleOp : OpMode() {
             }
         }
 
-        Robot.drive.motorVelocity = curvatureDrive(
+        curvatureDrive(
                 squareWithSign(-gamepad1.left_stick_y.toDouble()),
                 squareWithSign(gamepad1.right_stick_x.toDouble()),
                 gamepad1.right_stick_button
         )
-
-        SchedulerImpl.periodic()
     }
 
-    private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) :
-            MotorVelocity {
+    private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) {
         val angularPower = if (isQuickTurn) {
-            -zRotation
+            zRotation
         }
         else {
-            Math.abs(xSpeed) * -zRotation
+            Math.abs(xSpeed) * zRotation
         }
 
         var leftMotorOutput = xSpeed + angularPower
@@ -87,9 +93,15 @@ class TeleOp : OpMode() {
                 rightMotorOutput = -1.0
             }
         }
-        return MotorVelocity(
-                rightMotorOutput * Robot.drive.constraints.maximumVelocity,
-                leftMotorOutput * Robot.drive.constraints.maximumVelocity
-        )
+
+        leftFrontMotor.power = leftMotorOutput
+        leftBackMotor.power = leftMotorOutput
+
+        rightFrontMotor.power = rightMotorOutput
+        rightBackMotor.power = rightMotorOutput
     }
+
+    private fun squareWithSign(value: Double) =
+            if (value < 0) Math.pow(value, 2.0) else -Math.pow(value, 2.0)
+
 }

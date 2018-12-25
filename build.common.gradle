@@ -37,8 +37,8 @@ android {
 
     defaultConfig {
         applicationId 'com.qualcomm.ftcrobotcontroller'
-        minSdkVersion 19
-        targetSdkVersion 19
+        minSdkVersion 21
+        targetSdkVersion 21
 
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
@@ -67,6 +67,8 @@ android {
         //
         versionCode vCode
         versionName vName
+
+        multiDexEnabled true
     }
 
     // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed

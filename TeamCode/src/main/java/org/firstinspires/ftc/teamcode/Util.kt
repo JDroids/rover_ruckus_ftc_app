@@ -21,7 +21,7 @@ object Util {
     fun Number.toRadians() = this.toDouble() * (Math.PI/180)
     fun Number.toDegrees() = this.toDouble() * (180/Math.PI)
 
-    fun BNO055IMU.getRadians() = ((this.angularOrientation.toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).toAngleUnit(AngleUnit.DEGREES).firstAngle+180)*-1).toRadians()
+    fun BNO055IMU.getRadians() = ((this.angularOrientation.toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).toAngleUnit(AngleUnit.DEGREES).firstAngle+180)).toRadians()
 
     val hitSample = LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 1.0))
     val depositMarker = LinearPath(Waypoint(0.0, 0.0), Waypoint(0.0, 2.5))

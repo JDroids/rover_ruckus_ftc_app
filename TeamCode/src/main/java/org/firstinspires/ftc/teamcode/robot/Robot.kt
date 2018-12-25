@@ -14,6 +14,6 @@ object Robot {
         hang.opMode = opMode
 
         drive.initHardware()
-        hang.initHardware()
+        // hang.initHardware()
     }
 }
