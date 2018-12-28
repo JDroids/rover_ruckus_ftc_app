@@ -24,5 +24,7 @@ class TurnTest : LinearOpMode() {
         }
 
         command.end()
+
+        SchedulerImpl.kill()
     }
 }

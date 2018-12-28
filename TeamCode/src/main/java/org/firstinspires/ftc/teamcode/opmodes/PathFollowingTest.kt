@@ -25,4 +25,8 @@ class PathFollowingTest : OpMode() {
     override fun loop() {
         SchedulerImpl.periodic()
     }
+
+    override fun stop() {
+        SchedulerImpl.kill()
+    }
 }

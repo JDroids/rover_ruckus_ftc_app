@@ -33,5 +33,7 @@ class TurnToGoldOpMode : LinearOpMode() {
         rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
         Util.moveFeet(2.0, this, leftMotor, rightMotor)
+
+        SchedulerImpl.kill()
     }
 }

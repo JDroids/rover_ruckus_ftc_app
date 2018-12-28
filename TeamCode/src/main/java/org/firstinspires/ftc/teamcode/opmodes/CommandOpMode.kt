@@ -20,5 +20,6 @@ abstract class CommandOpMode(private val command: Command) : LinearOpMode() {
 
         command.end()
 
+        SchedulerImpl.kill()
     }
 }

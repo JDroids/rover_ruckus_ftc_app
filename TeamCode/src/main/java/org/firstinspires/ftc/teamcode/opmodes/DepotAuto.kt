@@ -4,6 +4,7 @@ import com.jdroids.robotlib.command.Command
 import com.jdroids.robotlib.command.SchedulerImpl
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Util.getRadians
 import org.firstinspires.ftc.teamcode.robot.Robot
 import org.firstinspires.ftc.teamcode.robot.commands.TurnToGold
 
+@Disabled
 @Autonomous(name="Depot Auto")
 class DepotAuto : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}

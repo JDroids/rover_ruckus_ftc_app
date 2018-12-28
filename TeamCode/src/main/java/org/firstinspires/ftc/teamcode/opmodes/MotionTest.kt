@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.opmodes
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
+import com.jdroids.robotlib.command.SchedulerImpl
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.pathplanning.*
 
+@Disabled
 @Autonomous(name="MotionTest")
 class MotionTest : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
@@ -46,6 +49,10 @@ class MotionTest : LinearOpMode() {
             packet.put("Target Position Y", followerResult.waypoint.y)
 
             FtcDashboard.getInstance().sendTelemetryPacket(packet)
+
+            SchedulerImpl.periodic()
         }
+
+        SchedulerImpl.kill()
     }
 }
