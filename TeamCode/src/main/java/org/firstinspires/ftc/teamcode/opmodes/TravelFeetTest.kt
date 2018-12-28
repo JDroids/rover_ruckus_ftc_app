@@ -4,4 +4,4 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.robot.commands.TravelFeet
 
 @Autonomous(name="TravelFeetTest")
-class TravelFeetTest : CommandTest(TravelFeet(2.0))
+class TravelFeetTest : CommandOpMode(TravelFeet(2.0))

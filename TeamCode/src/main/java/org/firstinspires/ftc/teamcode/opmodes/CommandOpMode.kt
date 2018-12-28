@@ -5,7 +5,7 @@ import com.jdroids.robotlib.command.SchedulerImpl
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.robot.Robot
 
-abstract class CommandTest(private val command: Command) : LinearOpMode() {
+abstract class CommandOpMode(private val command: Command) : LinearOpMode() {
     override fun runOpMode() {
         Robot.initHardware(this)
 
