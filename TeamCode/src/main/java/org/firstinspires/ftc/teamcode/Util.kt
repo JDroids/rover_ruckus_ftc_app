@@ -153,8 +153,8 @@ object Util {
         }
     }
 
-    fun encoderTicksToFeet(ticks: Int) = ((ticks/1120.0) * 4 * Math.PI) / 12
-    fun feetToEncoderTicks(feet: Double) = ((1120.0*12.0*feet) / (4 * Math.PI)).roundToInt()
+    fun encoderTicksToFeet(ticks: Int) = ((ticks/560.0) * 4 * Math.PI) / 12
+    fun feetToEncoderTicks(feet: Double) = ((560.0*12.0*feet) / (4 * Math.PI)).roundToInt()
 
     data class Position(val waypoint: Waypoint, val angle: Double)
 

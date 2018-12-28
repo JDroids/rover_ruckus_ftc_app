@@ -12,14 +12,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.Util
+import org.firstinspires.ftc.teamcode.Util.encoderTicksToFeet
+import org.firstinspires.ftc.teamcode.Util.feetToEncoderTicks
 import org.firstinspires.ftc.teamcode.pathplanning.DriveTrainStatistics
 import org.firstinspires.ftc.teamcode.pathplanning.MotionProfilingConstraints
 import org.firstinspires.ftc.teamcode.pathplanning.MotorVelocity
 import org.firstinspires.ftc.teamcode.Util.getRadians
 
 class Drive : Subsystem {
-    var initialPose = Pose2d()
-
     lateinit var opMode: OpMode
 
     private val leftFrontMotor
@@ -34,6 +34,17 @@ class Drive : Subsystem {
 
     val imu: BNO055IMU
         by lazy {opMode.hardwareMap.get(BNO055IMU::class.java, "imu")}
+
+    var leftSideFeetChange = 0.0
+        private set
+
+    var rightSideFeetChange = 0.0
+        private set
+
+    fun resetFeetChange() {
+        leftSideFeetChange = 0.0
+        rightSideFeetChange = 0.0
+    }
 
     val statistics = DriveTrainStatistics(1.0/3.0, 1.145833)
     val constraints = MotionProfilingConstraints(4.6, 0.75)
@@ -71,26 +82,12 @@ class Drive : Subsystem {
         rightFrontMotor.setVelocity(rightMotorVelocity, AngleUnit.RADIANS)
         rightFrontMotor.setVelocity(rightMotorVelocity, AngleUnit.RADIANS)
 
+        leftSideFeetChange += encoderTicksToFeet(
+                (leftFrontMotor.currentPosition + leftBackMotor.currentPosition) / 2)
+
+        rightSideFeetChange += encoderTicksToFeet(
+                (rightFrontMotor.currentPosition + rightBackMotor.currentPosition) / 2)
+
         opMode.telemetry.addData("Motor Velocity", motorVelocity)
-    }
-
-    inner class DriveWrapper : TankDrive(statistics.wheelDistance) {
-        override fun setMotorPowers(left: Double, right: Double) {
-            motorVelocity = MotorVelocity(
-                    right * constraints.maximumVelocity,
-                    left * constraints.maximumVelocity
-            )
-        }
-
-        override fun getWheelPositions(): List<Double> {
-            val leftPosition =
-                    (leftFrontMotor.currentPosition + leftBackMotor.currentPosition) / 2
-        val rightPosition =
-                    (rightFrontMotor.currentPosition + rightBackMotor.currentPosition) / 2
-
-            return listOf(leftPosition.toDouble(), rightPosition.toDouble())
-        }
-
-        override fun getExternalHeading(): Double = imu.getRadians() + initialPose.heading
     }
 }
