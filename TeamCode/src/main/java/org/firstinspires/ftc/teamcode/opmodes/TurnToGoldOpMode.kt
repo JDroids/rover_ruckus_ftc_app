@@ -17,7 +17,7 @@ class TurnToGoldOpMode : LinearOpMode() {
     override fun runOpMode() {
         Robot.initHardware(this)
 
-        val turnToGold = TurnToGold(this)
+        val turnToGold = TurnToGold()
 
         SchedulerImpl.run(turnToGold)
 

@@ -4,6 +4,7 @@ import com.jdroids.robotlib.command.Command
 import com.jdroids.robotlib.command.SchedulerImpl
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -14,8 +15,9 @@ import org.firstinspires.ftc.teamcode.Util.getRadians
 import org.firstinspires.ftc.teamcode.robot.Robot
 import org.firstinspires.ftc.teamcode.robot.commands.TurnToGold
 
-@Autonomous(name="Crater Auto")
-class CraterAuto2 : LinearOpMode() {
+@Disabled
+@Autonomous(name="Crater Auto old")
+class CraterAutoOld : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
 
@@ -42,7 +44,7 @@ class CraterAuto2 : LinearOpMode() {
 
         Util.moveFeet(-0.1, this, leftMotor, rightMotor)
 
-        val turnToGold = TurnToGold(this)
+        val turnToGold = TurnToGold()
 
         SchedulerImpl.run(turnToGold)
 

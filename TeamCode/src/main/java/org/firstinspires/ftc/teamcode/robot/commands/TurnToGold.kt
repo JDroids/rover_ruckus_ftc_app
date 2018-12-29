@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.JankPID
 import org.firstinspires.ftc.teamcode.pathplanning.MotorVelocity
 import org.firstinspires.ftc.teamcode.robot.Robot
 
-class TurnToGold(private val opMode: OpMode) : Command {
+class TurnToGold : Command {
     @Config
     object TurnCoefficients {
         @JvmField var TURNING_PID = PIDCoefficients(-25.0, 0.0, -1.0)
@@ -84,8 +84,6 @@ class TurnToGold(private val opMode: OpMode) : Command {
 
         Robot.drive.motorVelocity = MotorVelocity(-result, result)
 
-        opMode.telemetry.addData("GoldX", goldAngle)
-
         FtcDashboard.getInstance().telemetry.addData("Gold Location", goldAngle)
         FtcDashboard.getInstance().telemetry.addData("PIDResult", result)
         FtcDashboard.getInstance().telemetry.update()
@@ -102,8 +100,9 @@ class TurnToGold(private val opMode: OpMode) : Command {
     override fun isCompleted() = Math.abs(goldAngle) < 0.1
 
     private fun getTfod(vuforia: VuforiaLocalizer) : TFObjectDetector {
-        val tfodMonitorViewId = opMode.hardwareMap.appContext.resources.getIdentifier(
-                "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.packageName
+        val tfodMonitorViewId = Robot.opMode.hardwareMap.appContext.resources.getIdentifier(
+                "tfodMonitorViewId", "id",
+                Robot.opMode.hardwareMap.appContext.packageName
         )
 
         val params = TFObjectDetector.Parameters(tfodMonitorViewId)
@@ -120,7 +119,7 @@ class TurnToGold(private val opMode: OpMode) : Command {
 
         params.vuforiaLicenseKey = " Af8z1N//////AAABmd+VTcKIy0DvswaS6ptJxhU6esp8q/iwhtFaV1BcqNpTKe5OuZmOsRDT7ThrIx4/49OsRIPgC18aN8v93oqt/F0IGHy32sgT5U3BV7xchvQ5uGUvACuy4+9wXouHBalSXYWX/bLd0hhYVx3oe+D/WqrhqmZTvLbjAdxRdecRc0wNDwUSN1Iz0dQR19h8TDdenzHR7vNBVAR44/X4c8fFuEnJ06lKxJqzunFAgsRmBt5uzG/HLg1vxRJDfX04pEDILoJKfG9hqI1Hx+MjBcdJj4WMLg43D9iokXSuc7I9SJiu7L6TwWutKeK9ANACkCdAN6UaYpNXFRf9pjvhCLeTa2mlWkuN7gIxeswkuL+x4qtQ"
 
-        params.cameraName = opMode.hardwareMap.get(WebcamName::class.java, "Webcam 1")
+        params.cameraName = Robot.opMode.hardwareMap.get(WebcamName::class.java, "Webcam 1")
 
         return ClassFactory.getInstance().createVuforia(params)
     }

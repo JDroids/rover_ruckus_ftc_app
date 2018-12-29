@@ -44,7 +44,7 @@ class DepotAuto : LinearOpMode() {
 
         Util.moveFeet(-0.1, this, leftMotor, rightMotor)
 
-        val turnToGold = TurnToGold(this)
+        val turnToGold = TurnToGold()
 
         SchedulerImpl.run(turnToGold)
 

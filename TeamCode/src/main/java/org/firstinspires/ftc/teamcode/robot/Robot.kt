@@ -9,7 +9,12 @@ object Robot {
     val drive = Drive()
     val hang = Hang()
 
+    lateinit var opMode: OpMode
+        private set
+
     fun initHardware(opMode: OpMode) {
+        this.opMode = opMode
+
         drive.opMode = opMode
         hang.opMode = opMode
 
