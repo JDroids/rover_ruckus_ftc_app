@@ -5,52 +5,35 @@ import com.jdroids.robotlib.command.Subsystem
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.Servo
 
 class Hang : Subsystem {
-    init {
-        SchedulerImpl.register(this)
-    }
-
     lateinit var opMode: OpMode
 
     private val hangMotor1 by lazy {opMode.hardwareMap.get(DcMotorEx::class.java, "hang1")}
     private val hangMotor2 by lazy {opMode.hardwareMap.get(DcMotorEx::class.java, "hang2")}
-    private val hangServo by lazy {opMode.hardwareMap.get(Servo::class.java, "hangServo")}
 
-    enum class HookState {
-        LATCHED,
-        OPENED,
-        NEUTRAL
-    }
-
-    enum class LiftState{
+    enum class State {
         UP,
         DOWN,
         NEUTRAL
     }
 
-    var hookState = HookState.NEUTRAL
-    var liftState = LiftState.NEUTRAL
+    var state = State.NEUTRAL
+
+    private val liftSpeed = 0.9
 
     override fun initHardware() {
         hangMotor1.direction = DcMotorSimple.Direction.REVERSE
+        hangMotor2 // This initializes the "by lazy" element for hangMotor2
 
-        hangMotor2
-        hangServo
+        SchedulerImpl.register(this)
     }
 
     override fun periodic() {
-        when (hookState) {
-            HookState.LATCHED -> hangServo.position = 0.0
-            HookState.OPENED -> hangServo.position = 1.0
-            else -> {}
-        }
-
-        val power = when (liftState) {
-            LiftState.UP -> 0.8
-            LiftState.DOWN -> -0.8
-            else -> 0.0
+        val power = when (state) {
+            State.UP -> liftSpeed
+            State.DOWN -> -liftSpeed
+            State.NEUTRAL -> 0.0
         }
 
         hangMotor1.power = power
