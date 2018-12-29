@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.robot.Robot
 import org.firstinspires.ftc.teamcode.robot.commands.TurnToGold
 
 @Disabled
-@Autonomous(name="Depot Auto")
-class DepotAuto : LinearOpMode() {
+@Autonomous(name="Depot Auto Old")
+class DepotAutoOld : LinearOpMode() {
     private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
 
