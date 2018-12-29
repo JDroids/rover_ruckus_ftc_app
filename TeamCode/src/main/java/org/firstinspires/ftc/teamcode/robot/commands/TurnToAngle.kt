@@ -7,10 +7,13 @@ import org.firstinspires.ftc.teamcode.Util.toRadians
 import com.jdroids.robotlib.command.Command
 import com.jdroids.robotlib.controller.PIDControllerImpl
 import com.qualcomm.robotcore.hardware.PIDCoefficients
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.pathplanning.MotorVelocity
 import org.firstinspires.ftc.teamcode.robot.Robot
 
-class TurnToAngle(private val angle: Double) : Command {
+class TurnToAngle(angleUnit: AngleUnit, value: Double) : Command {
+    private val angle = AngleUnit.RADIANS.fromUnit(angleUnit, value)
+
     @Config
     object TurningCoefficients {
         @JvmField var p = 10.0
