@@ -16,9 +16,9 @@ class DepotAutonomous : CommandOpMode(
         TurnToGold(),
         TravelFeet(3.8),
         TravelFeet(-1.8),
-        TurnToAngle(AngleUnit.DEGREES, 135.0),
+        TurnToAngle(AngleUnit.DEGREES, 110.0),
         TravelFeet(3.0),
-        TurnToAngle(AngleUnit.DEGREES,90.0),
+        TurnToAngle(AngleUnit.DEGREES,45.0),
         TravelFeet(5.0)
     )
 )
