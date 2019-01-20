@@ -1,39 +1,33 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import com.jdroids.robotlib.command.SchedulerImpl
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.Util
-import org.firstinspires.ftc.teamcode.robot.Robot
-import org.firstinspires.ftc.teamcode.robot.commands.TurnToGold
+import org.firstinspires.ftc.teamcode.robot.SamplingHelper
 
 @Autonomous(name="TurnToGold")
 class TurnToGoldOpMode : LinearOpMode() {
-    private val leftMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "left")}
-    private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
+    private val leftFrontMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "lf")}
+    private val leftBackMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "lb")}
+
+    private val rightFrontMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "rf")}
+    private val rightBackMotor
+            by lazy {hardwareMap.get(DcMotorEx::class.java, "rb")}
 
     override fun runOpMode() {
-        Robot.initHardware(this)
+        rightFrontMotor.direction = DcMotorSimple.Direction.REVERSE
+        rightBackMotor.direction = DcMotorSimple.Direction.REVERSE
 
-        val turnToGold = TurnToGold()
-
-        SchedulerImpl.run(turnToGold)
+        val samplingHelper = SamplingHelper(this)
 
         waitForStart()
 
-        while (!turnToGold.isCompleted() && opModeIsActive()) {
-            SchedulerImpl.periodic()
-
-            telemetry.update()
-        }
-
-        leftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        rightMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-
-        Util.moveFeet(2.0, this, leftMotor, rightMotor)
-
-        SchedulerImpl.kill()
+        Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
+                rightFrontMotor, rightBackMotor)
     }
 }

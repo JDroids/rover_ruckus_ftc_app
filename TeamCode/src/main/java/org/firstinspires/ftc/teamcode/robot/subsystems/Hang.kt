@@ -39,8 +39,8 @@ class Hang : Subsystem {
         isSensorActive = !hangSensor.state // Rev hall sensors are false if in contact with a magnet
 
         val power = when (state) {
-            State.UP -> liftSpeed
-            State.DOWN -> -liftSpeed
+            State.UP -> -liftSpeed
+            State.DOWN -> liftSpeed
             State.NEUTRAL -> 0.0
         }
 

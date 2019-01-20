@@ -28,8 +28,10 @@ class TeleOp : OpMode() {
             by lazy {hardwareMap.get(DcMotorEx::class.java, "rb")}
 
     override fun init() {
-        leftFrontMotor
-        leftBackMotor
+        leftFrontMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+        leftBackMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+        rightFrontMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+        rightBackMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
 
         rightFrontMotor.direction = DcMotorSimple.Direction.REVERSE
         rightBackMotor.direction = DcMotorSimple.Direction.REVERSE
