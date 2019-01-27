@@ -39,11 +39,11 @@ class CraterAuto : LinearOpMode() {
 
         val samplingHelper = SamplingHelper(this)
 
+        Util.initializeIMU(imu)
+
         waitForStart()
 
         Util.land(this, hangMotor1, hangMotor2, hangSensor)
-
-        //Util.initializeIMU(imu)
 
         /*Util.moveFeet(3.0, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
