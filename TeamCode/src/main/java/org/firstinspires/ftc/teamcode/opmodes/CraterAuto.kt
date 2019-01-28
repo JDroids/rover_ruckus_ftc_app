@@ -43,7 +43,7 @@ class CraterAuto : LinearOpMode() {
 
         waitForStart()
 
-        Util.land(this, hangMotor1, hangMotor2, hangSensor)
+        //Util.land(this, hangMotor1, hangMotor2, hangSensor)
 
         /*Util.moveFeet(3.0, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
@@ -58,11 +58,14 @@ class CraterAuto : LinearOpMode() {
         Util.moveFeet(3.0, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-
-        Util.moveFeet(-1.5, 0.5, this,
+        Util.moveFeet(-1.2, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES, 165.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        Util.turnToAngle(AngleUnit.DEGREES, 90.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.moveFeet(2.0, 0.5, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
+
+        Util.turnToAngle(AngleUnit.DEGREES, 300.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
         /*-
         Util.moveFeet(3.0, 0.5, this,

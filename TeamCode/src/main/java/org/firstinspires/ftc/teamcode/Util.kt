@@ -231,20 +231,33 @@ object Util {
 
         val angleRadians = angleUnit.toRadians(angle)
 
+        var output = 0.0
+
         val controller = PIDControllerImpl(
-                { imu.getRadians() },
-                { o: Double -> setMotorVelocity(MotorVelocity(-o, o),
-                        leftMotor1, leftMotor2, rightMotor1, rightMotor2) },
+                { AngleUnit.normalizeRadians(imu.getRadians()) },
+                { o: Double -> output = o},
                 angleRadians,
                 TurnToAngle.TurningCoefficients.p,
                 TurnToAngle.TurningCoefficients.i,
                 TurnToAngle.TurningCoefficients.d
         )
 
-        while (Math.abs(imu.getRadians() - angleRadians) >= (Math.PI/64)
-                && opMode.opModeIsActive()) {
+        do {
             controller.result()
+
+            opMode.telemetry.addData("Output", output)
+
+            setMotorVelocity(MotorVelocity(-output, output),
+                    leftMotor1, leftMotor2, rightMotor1, rightMotor2)
+
+            opMode.telemetry.update()
         }
+        while (Math.abs(imu.getRadians() - angleRadians) >= (Math.PI/64)
+                && output >= 0.1 && opMode.opModeIsActive())
+
+
+        setMotorVelocity(MotorVelocity(0.0, 0.0),
+                leftMotor1, leftMotor2, rightMotor1, rightMotor2)
     }
 
     fun getToDistanceWithDistanceSensor(inches: Double, linearOpMode: LinearOpMode,
@@ -286,7 +299,7 @@ object Util {
 
         val timer = ElapsedTime()
 
-        while (Math.abs(helper.goldAngle) > 0.05 && opMode.opModeIsActive()) {
+        while (Math.abs(helper.goldAngle) > 0.03 && opMode.opModeIsActive()) {
             helper.update()
 
             var result = if (helper.goldAngle != -1.0) helper.goldAngle * P_COEFFICIENT else 0.0

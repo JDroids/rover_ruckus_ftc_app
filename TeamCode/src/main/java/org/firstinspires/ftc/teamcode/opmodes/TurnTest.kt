@@ -38,5 +38,7 @@ class TurnTest : LinearOpMode() {
         Util.turnToAngle(AngleUnit.DEGREES, 90.0, this, leftFrontMotor, leftBackMotor,
                 rightFrontMotor, rightBackMotor, imu)
 
+        Util.turnToAngle(AngleUnit.DEGREES, 270.0, this, leftFrontMotor, leftBackMotor,
+                rightFrontMotor, rightBackMotor, imu)
     }
 }
