@@ -223,18 +223,30 @@ object Util {
         rightMotor.power = 0.0
     }
 
+    fun normalizeAngle(angle: Double, angleUnit: AngleUnit): Double {
+        val TAU = Math.PI * 2
+
+        var angle = if(angleUnit == AngleUnit.RADIANS) angle else Math.toRadians(angle)
+
+        angle = (angle % TAU)
+        angle = (angle + TAU) % TAU
+
+        if (angle > Math.PI)
+            angle -= TAU
+        return if(angleUnit == AngleUnit.RADIANS) angle else Math.toDegrees(angle)
+    }
     fun turnToAngle(angleUnit: AngleUnit, angle: Double, opMode: LinearOpMode,
                     leftMotor1: DcMotorEx, leftMotor2: DcMotorEx,
                     rightMotor1: DcMotorEx, rightMotor2: DcMotorEx, imu: BNO055IMU) {
 
         var p = 10.0
 
-        val angleRadians = angleUnit.toRadians(angle)
+        val angleRadians = normalizeAngle(angleUnit.toRadians(angle), AngleUnit.RADIANS)
 
         var output = 0.0
 
         val controller = PIDControllerImpl(
-                { AngleUnit.normalizeRadians(imu.getRadians()) },
+                { normalizeAngle(imu.getRadians(), AngleUnit.RADIANS) },
                 { o: Double -> output = o},
                 angleRadians,
                 TurnToAngle.TurningCoefficients.p,
