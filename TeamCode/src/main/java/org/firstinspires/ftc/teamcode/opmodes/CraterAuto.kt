@@ -45,9 +45,6 @@ class CraterAuto : LinearOpMode() {
 
         //Util.land(this, hangMotor1, hangMotor2, hangSensor)
 
-        /*Util.moveFeet(3.0, 0.3, this,
-                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
-        */
 
         Util.moveFeet(0.3, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
@@ -55,30 +52,32 @@ class CraterAuto : LinearOpMode() {
         Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
                 rightFrontMotor, rightBackMotor)
 
-        Util.moveFeet(3.0, 0.3, this,
+        Util.moveFeet(2.8, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.moveFeet(-1.2, 0.5, this,
+        Util.moveFeet(-2.4, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES, 90.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        Util.turnToAngle(AngleUnit.DEGREES, 180.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.moveFeet(2.0, 0.5, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
-
-        Util.turnToAngle(AngleUnit.DEGREES, 300.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
-
-        /*-
-        Util.moveFeet(3.0, 0.5, this,
+        Util.moveFeet(0.6, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES,45.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        Util.turnToAngle(AngleUnit.DEGREES, 265.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.moveFeet(5.0, 0.5, this,
+        Util.moveFeet(2.5, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        //deposit marker here
+        Util.turnToAngle(AngleUnit.DEGREES, 315.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.moveFeet(-6.0, 0.5, this,
-                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)*/
+        Util.moveFeet(4.0, 0.5, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+
+        // deposit marker here
+
+        Util.turnToAngle(AngleUnit.DEGREES, 320.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.moveFeet(-5.0, 0.3, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
     }
 }

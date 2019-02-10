@@ -35,10 +35,20 @@ class TurnTest : LinearOpMode() {
 
         waitForStart()
 
+        Util.turnToAngle(AngleUnit.DEGREES, 39.0, this, leftFrontMotor, leftBackMotor,
+                rightFrontMotor, rightBackMotor, imu)
+
         Util.turnToAngle(AngleUnit.DEGREES, 90.0, this, leftFrontMotor, leftBackMotor,
                 rightFrontMotor, rightBackMotor, imu)
 
-        Util.turnToAngle(AngleUnit.DEGREES, 270.0, this, leftFrontMotor, leftBackMotor,
+
+        Util.turnToAngle(AngleUnit.DEGREES, 70.0, this, leftFrontMotor, leftBackMotor,
+                rightFrontMotor, rightBackMotor, imu)
+
+        Util.turnToAngle(AngleUnit.DEGREES, 0.0, this, leftFrontMotor, leftBackMotor,
+                rightFrontMotor, rightBackMotor, imu)
+
+        Util.turnToAngle(AngleUnit.DEGREES, 180.0, this, leftFrontMotor, leftBackMotor,
                 rightFrontMotor, rightBackMotor, imu)
     }
 }

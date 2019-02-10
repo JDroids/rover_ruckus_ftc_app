@@ -235,6 +235,7 @@ object Util {
             angle -= TAU
         return if(angleUnit == AngleUnit.RADIANS) angle else Math.toDegrees(angle)
     }
+
     fun turnToAngle(angleUnit: AngleUnit, angle: Double, opMode: LinearOpMode,
                     leftMotor1: DcMotorEx, leftMotor2: DcMotorEx,
                     rightMotor1: DcMotorEx, rightMotor2: DcMotorEx, imu: BNO055IMU) {
@@ -254,7 +255,8 @@ object Util {
                 TurnToAngle.TurningCoefficients.d
         )
 
-        do {
+        while (Math.abs(normalizeAngle(imu.getRadians(), AngleUnit.RADIANS) - angleRadians) >=
+                (Math.PI/64) && opMode.opModeIsActive()) {
             controller.result()
 
             opMode.telemetry.addData("Output", output)
@@ -264,8 +266,6 @@ object Util {
 
             opMode.telemetry.update()
         }
-        while (Math.abs(imu.getRadians() - angleRadians) >= (Math.PI/64)
-                && output >= 0.1 && opMode.opModeIsActive())
 
 
         setMotorVelocity(MotorVelocity(0.0, 0.0),

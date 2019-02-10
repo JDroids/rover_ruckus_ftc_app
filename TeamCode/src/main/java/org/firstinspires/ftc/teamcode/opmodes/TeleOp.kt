@@ -1,31 +1,45 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import com.jdroids.robotlib.command.SchedulerImpl
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.config.Config
+import com.jdroids.robotlib.controller.PIDControllerImpl
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.teamcode.Util
-import org.firstinspires.ftc.teamcode.pathplanning.MotorVelocity
-import org.firstinspires.ftc.teamcode.robot.Robot
-import org.firstinspires.ftc.teamcode.robot.subsystems.Drive
+import com.qualcomm.robotcore.hardware.PIDCoefficients
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 
 @TeleOp(name="TeleOp")
 class TeleOp : OpMode() {
     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
 
-    private val leftFrontMotor
-            by lazy {hardwareMap.get(DcMotorEx::class.java, "lf")}
-    private val leftBackMotor
-            by lazy {hardwareMap.get(DcMotorEx::class.java, "lb")}
+    private val leftFrontMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "lf")}
+    private val leftBackMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "lb")}
 
-    private val rightFrontMotor
-            by lazy {hardwareMap.get(DcMotorEx::class.java, "rf")}
-    private val rightBackMotor
-            by lazy {hardwareMap.get(DcMotorEx::class.java, "rb")}
+    private val rightFrontMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "rf")}
+
+    private val rightBackMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "rb")}
+
+    private val leftArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "leftArmMotor")}
+    private val rightArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "rightArmMotor")}
+
+    private val armTOFSensor by lazy {hardwareMap.get(Rev2mDistanceSensor::class.java, "tofSensor")}
+
+    @Config
+    object ArmPIDCoefficients {
+        @JvmField var ARM_PID = PIDCoefficients(0.0, 0.0, 0.0)
+    }
+
+    private val armPID = PIDControllerImpl(
+        {armTOFSensor.getDistance(DistanceUnit.INCH)},
+        {},
+        2.5,
+        ArmPIDCoefficients.ARM_PID.p, ArmPIDCoefficients.ARM_PID.i, ArmPIDCoefficients.ARM_PID.d
+    )
 
     override fun init() {
         leftFrontMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
@@ -39,9 +53,13 @@ class TeleOp : OpMode() {
         hangMotor1.direction = DcMotorSimple.Direction.REVERSE
     }
 
-    val hangMotorPower = 0.9
+    private val hangMotorPower = 0.9
+    private val armMotorPower = 0.2
 
     override fun loop() {
+        val targetArmPower = armPID.result()
+
+        // Deal with hang mechanism (left bumper to retract, right bumper to extend)
         when {
             gamepad1.left_bumper -> {
                 hangMotor1.power = hangMotorPower
@@ -57,11 +75,41 @@ class TeleOp : OpMode() {
             }
         }
 
+        // Deal with arm
+        if (gamepad2.a) {
+            leftArmMotor.power = -targetArmPower
+            rightArmMotor.power = targetArmPower
+        }
+        else {
+            when {
+                gamepad2.left_bumper -> {
+                    if (armTOFSensor.getDistance(DistanceUnit.INCH) > 2.5) {
+                        leftArmMotor.power = 0.2
+                        rightArmMotor.power = -0.2
+                    }
+                }
+                gamepad2.right_bumper -> {
+                    leftArmMotor.power = -0.8
+                    rightArmMotor.power = 0.8
+                }
+                else -> {
+                    leftArmMotor.power = 0.0
+                    rightArmMotor.power = 0.0
+                }
+            }
+        }
+
+        FtcDashboard.getInstance().telemetry.addData("target power", targetArmPower)
+        FtcDashboard.getInstance().telemetry.addData("sensor output", armTOFSensor.getDistance(DistanceUnit.INCH))
+
+        // Deal with drivetrain
         curvatureDrive(
                 squareWithSign(-gamepad1.left_stick_y.toDouble()),
                 squareWithSign(gamepad1.right_stick_x.toDouble()),
                 gamepad1.right_stick_button
         )
+
+        FtcDashboard.getInstance().telemetry.update()
     }
 
     private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) {
