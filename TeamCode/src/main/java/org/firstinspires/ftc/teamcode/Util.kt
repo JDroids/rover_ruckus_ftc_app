@@ -6,6 +6,7 @@ import com.jdroids.robotlib.controller.PIDControllerImpl
 //import com.disnodeteam.dogecv.DogeCV
 //import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector
 import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
@@ -272,22 +273,6 @@ object Util {
                 leftMotor1, leftMotor2, rightMotor1, rightMotor2)
     }
 
-    fun getToDistanceWithDistanceSensor(inches: Double, linearOpMode: LinearOpMode,
-                                        sensor: DistanceSensor, leftMotor: DcMotor,
-                                        rightMotor: DcMotor) {
-        while (linearOpMode.opModeIsActive()) {
-            if (sensor.getDistance(DistanceUnit.INCH) - inches < 2) {
-                leftMotor.power = -0.4
-                rightMotor.power = -0.4
-            } else if (sensor.getDistance(DistanceUnit.INCH) - inches > 2) {
-                leftMotor.power = 0.4
-                rightMotor.power = 0.4
-            } else {
-                break
-            }
-        }
-    }
-
     fun setMotorVelocity(motorVelocity: MotorVelocity, leftMotor1: DcMotorEx, leftMotor2: DcMotorEx,
                          rightMotor1: DcMotorEx, rightMotor2: DcMotorEx) {
         val wheelCircumference = statistics.wheelRadius * Math.PI * 2.0
@@ -306,7 +291,7 @@ object Util {
 
     fun turnToGold(opMode: LinearOpMode, helper: SamplingHelper, leftMotor1: DcMotorEx,
                    leftMotor2: DcMotorEx, rightMotor1: DcMotorEx, rightMotor2: DcMotorEx) {
-        val P_COEFFICIENT = 25
+        val P_COEFFICIENT = 30
         val SCANNING_POWER = 6.0
 
         val timer = ElapsedTime()
@@ -341,5 +326,27 @@ object Util {
         rightMotor2.power = 0.0
 
         helper.kill()
+    }
+
+    @Config
+    object TravelToDistancePIDCoefficients {
+        @JvmField var DRIVE_TO_COEFFICIENTS = PIDCoefficients(1.5, 0.0, 0.0)
+    }
+
+    fun travelToDistance(inches: Double, opMode: LinearOpMode, distanceSensor: DistanceSensor,
+                         leftMotor1: DcMotorEx, leftMotor2: DcMotorEx, rightMotor1: DcMotorEx,
+                         rightMotor2: DcMotorEx) {
+        while (Math.abs(distanceSensor.getDistance(DistanceUnit.INCH) - inches) > 0.5 &&
+                opMode.opModeIsActive()) {
+            val result = 1.5 * (inches - distanceSensor.getDistance(DistanceUnit.INCH))
+
+            setMotorVelocity(MotorVelocity(result, result), leftMotor1, leftMotor2, rightMotor1, rightMotor2)
+
+            opMode.telemetry.addData("Distance", distanceSensor.getDistance(DistanceUnit.INCH))
+            opMode.telemetry.addData("result", result)
+            opMode.telemetry.update()
+        }
+
+        arrayOf(leftMotor1, leftMotor2, rightMotor1, rightMotor2).forEach{it.apply{power=0.0}}
     }
 }

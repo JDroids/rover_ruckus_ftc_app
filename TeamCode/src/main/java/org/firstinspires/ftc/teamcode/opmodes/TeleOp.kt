@@ -27,19 +27,19 @@ class TeleOp : OpMode() {
     private val leftArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "leftArmMotor")}
     private val rightArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "rightArmMotor")}
 
-    private val armTOFSensor by lazy {hardwareMap.get(Rev2mDistanceSensor::class.java, "tofSensor")}
+   // private val armTOFSensor by lazy {hardwareMap.get(Rev2mDistanceSensor::class.java, "tofSensor")}
 
-    @Config
+    /*@Config
     object ArmPIDCoefficients {
         @JvmField var ARM_PID = PIDCoefficients(0.0, 0.0, 0.0)
-    }
+    }*/
 
-    private val armPID = PIDControllerImpl(
+    /*private val armPID = PIDControllerImpl(
         {armTOFSensor.getDistance(DistanceUnit.INCH)},
         {},
         2.5,
         ArmPIDCoefficients.ARM_PID.p, ArmPIDCoefficients.ARM_PID.i, ArmPIDCoefficients.ARM_PID.d
-    )
+    )*/
 
     override fun init() {
         leftFrontMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
@@ -57,17 +57,17 @@ class TeleOp : OpMode() {
     private val armMotorPower = 0.2
 
     override fun loop() {
-        val targetArmPower = armPID.result()
+        //val targetArmPower = armPID.result()
 
         // Deal with hang mechanism (left bumper to retract, right bumper to extend)
         when {
             gamepad1.left_bumper -> {
-                hangMotor1.power = hangMotorPower
-                hangMotor2.power = hangMotorPower
-            }
-            gamepad1.right_bumper -> {
                 hangMotor1.power = -hangMotorPower
                 hangMotor2.power = -hangMotorPower
+            }
+            gamepad1.right_bumper -> {
+                hangMotor1.power = hangMotorPower
+                hangMotor2.power = hangMotorPower
             }
             else -> {
                 hangMotor1.power = 0.0
@@ -76,7 +76,8 @@ class TeleOp : OpMode() {
         }
 
         // Deal with arm
-        if (gamepad2.a) {
+
+        /*if (gamepad2.a) {
             leftArmMotor.power = -targetArmPower
             rightArmMotor.power = targetArmPower
         }
@@ -101,6 +102,7 @@ class TeleOp : OpMode() {
 
         FtcDashboard.getInstance().telemetry.addData("target power", targetArmPower)
         FtcDashboard.getInstance().telemetry.addData("sensor output", armTOFSensor.getDistance(DistanceUnit.INCH))
+        */
 
         // Deal with drivetrain
         curvatureDrive(
@@ -109,7 +111,7 @@ class TeleOp : OpMode() {
                 gamepad1.right_stick_button
         )
 
-        FtcDashboard.getInstance().telemetry.update()
+        //FtcDashboard.getInstance().telemetry.update()
     }
 
     private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) {
