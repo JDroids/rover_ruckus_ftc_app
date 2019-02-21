@@ -6,10 +6,7 @@ import com.jdroids.robotlib.controller.PIDControllerImpl
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.PIDCoefficients
+import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 
 @TeleOp(name="TeleOp")
@@ -27,19 +24,21 @@ class TeleOp : OpMode() {
     private val leftArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "leftArmMotor")}
     private val rightArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "rightArmMotor")}
 
-   // private val armTOFSensor by lazy {hardwareMap.get(Rev2mDistanceSensor::class.java, "tofSensor")}
+    private val armPotent by lazy {hardwareMap.get(AnalogInput::class.java, "potent")}
+    private val spinner by lazy {hardwareMap.get(CRServo::class.java, "intakeServo")}
+    private val gate by lazy {hardwareMap.get(Servo::class.java, "gate")}
+    private val elbow by lazy {hardwareMap.get(Servo::class.java, "elbow")}
+    private val wrist by lazy {hardwareMap.get(Servo::class.java, "wrist")}
+    private val armExtension by lazy {hardwareMap.get(DcMotorEx::class.java, "extender")}
 
-    /*@Config
+    private var isGateClosed = true
+    private var armTarget: Double = -1.0
+    private var spinnerPower: Double = 0.0
+
+    @Config
     object ArmPIDCoefficients {
-        @JvmField var ARM_PID = PIDCoefficients(0.0, 0.0, 0.0)
-    }*/
-
-    /*private val armPID = PIDControllerImpl(
-        {armTOFSensor.getDistance(DistanceUnit.INCH)},
-        {},
-        2.5,
-        ArmPIDCoefficients.ARM_PID.p, ArmPIDCoefficients.ARM_PID.i, ArmPIDCoefficients.ARM_PID.d
-    )*/
+        @JvmField var ARM_P = 0.0
+    }
 
     override fun init() {
         leftFrontMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
@@ -57,8 +56,6 @@ class TeleOp : OpMode() {
     private val armMotorPower = 0.2
 
     override fun loop() {
-        //val targetArmPower = armPID.result()
-
         // Deal with hang mechanism (left bumper to retract, right bumper to extend)
         when {
             gamepad1.left_bumper -> {
@@ -74,36 +71,6 @@ class TeleOp : OpMode() {
                 hangMotor2.power = 0.0
             }
         }
-
-        // Deal with arm
-
-        /*if (gamepad2.a) {
-            leftArmMotor.power = -targetArmPower
-            rightArmMotor.power = targetArmPower
-        }
-        else {
-            when {
-                gamepad2.left_bumper -> {
-                    if (armTOFSensor.getDistance(DistanceUnit.INCH) > 2.5) {
-                        leftArmMotor.power = 0.2
-                        rightArmMotor.power = -0.2
-                    }
-                }
-                gamepad2.right_bumper -> {
-                    leftArmMotor.power = -0.8
-                    rightArmMotor.power = 0.8
-                }
-                else -> {
-                    leftArmMotor.power = 0.0
-                    rightArmMotor.power = 0.0
-                }
-            }
-        }
-
-        FtcDashboard.getInstance().telemetry.addData("target power", targetArmPower)
-        FtcDashboard.getInstance().telemetry.addData("sensor output", armTOFSensor.getDistance(DistanceUnit.INCH))
-        */
-
         // Deal with drivetrain
         curvatureDrive(
                 squareWithSign(-gamepad1.left_stick_y.toDouble()),
@@ -111,7 +78,60 @@ class TeleOp : OpMode() {
                 gamepad1.right_stick_button
         )
 
-        //FtcDashboard.getInstance().telemetry.update()
+        // Deal with deposit/intake
+        when {
+            gamepad2.a -> {
+                armTarget = 0.0
+                spinnerPower = -1.0 // Direction to intake
+                isGateClosed = true
+                elbow.position = 0.0 // Ground pos
+                wrist.position = 0.0 // Ground pos
+            }
+            gamepad2.b -> {
+                armTarget = 90.0
+                spinnerPower = -1.0 // Direction to intake
+                isGateClosed = true
+                elbow.position = 0.0 // Ground pos
+                wrist.position = 0.0 // Ground pos
+            }
+            gamepad2.x -> {
+                armTarget = 120.0
+                spinnerPower = -1.0 // Direction to intake
+                isGateClosed = true
+                elbow.position = 1.0 // Lifted pos
+                wrist.position = 1.0 // Extended pos
+            }
+            gamepad2.y -> {
+                armTarget = 120.0
+                spinnerPower = -1.0 // Direction to intake
+                isGateClosed = false
+                elbow.position = 1.0 // Lifted pos
+                wrist.position = 1.0 // Extended pos
+            }
+        }
+
+        val armAngle = (armPotent.voltage/armPotent.maxVoltage)*270.0 //Need to add/subtract so that 0 is parallel to floor
+
+        if (armTarget != -1.0) {
+            val speed = (armAngle - armTarget) * ArmPIDCoefficients.ARM_P
+            leftArmMotor.power = speed
+            rightArmMotor.power = speed
+        }
+
+        if (!gamepad2.right_bumper) {
+            spinner.power = spinnerPower
+        }
+        else {
+            spinner.power = 1.0 // Direction to reverse intake
+        }
+
+        gate.position = when (isGateClosed) {
+            true -> 1.0 // Closed pos
+            false -> 0.0 // Opened pos
+        }
+        armExtension.power = squareWithSign(gamepad2.left_stick_y.toDouble())
+
+        FtcDashboard.getInstance().telemetry.update()
     }
 
     private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) {
@@ -151,6 +171,9 @@ class TeleOp : OpMode() {
 
         rightFrontMotor.power = rightMotorOutput
         rightBackMotor.power = rightMotorOutput
+
+
+
     }
 
     private fun squareWithSign(value: Double) =
