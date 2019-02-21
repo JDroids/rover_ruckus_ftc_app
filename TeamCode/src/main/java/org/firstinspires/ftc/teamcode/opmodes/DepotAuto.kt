@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.Util
+import org.firstinspires.ftc.teamcode.Util.getRadians
 import org.firstinspires.ftc.teamcode.robot.SamplingHelper
 
 @Autonomous(name="Depot Auto")
@@ -31,6 +33,9 @@ class DepotAuto : LinearOpMode() {
     private val hangSensor by lazy {
         hardwareMap!!.get(DigitalChannel::class.java, "hangSensor")}
 
+    private val rangeSensor
+            by lazy {hardwareMap.get(ModernRoboticsI2cRangeSensor::class.java, "rangeSensor")}
+
     private val imu by lazy {hardwareMap!!.get(BNO055IMU::class.java, "imu")}
 
     override fun runOpMode() {
@@ -39,48 +44,64 @@ class DepotAuto : LinearOpMode() {
 
         val samplingHelper = SamplingHelper(this)
 
+        Util.initializeIMU(imu)
+
         waitForStart()
 
-        Util.land(this, hangMotor1, hangMotor2, hangSensor)
+        //Util.land(this, hangMotor1, hangMotor2, hangSensor)
 
-        //Util.initializeIMU(imu)
+        Util.moveFeet(0.3, 0.3, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
         Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
                 rightFrontMotor, rightBackMotor)
 
-        Util.moveFeet(5.3, 0.3, this,
+        Util.moveFeet(2.4, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        markerServo.position = 1.0
+        Util.moveFeet(-1.9, 0.5, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        sleep(3000)
+        Util.turnToAngle(AngleUnit.DEGREES, 235.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.moveFeet(-1.0, 0.5, this, leftFrontMotor, leftBackMotor,
-                rightFrontMotor, rightBackMotor)
+        Util.travelToDistance(5.0, this, rangeSensor,
+                leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
+
+
+        Util.turnToAngle(AngleUnit.DEGREES, 305.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.moveFeet(2.4, 0.2, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+
 
         /*
-        Util.turnToGold(this, tfod, leftFrontMotor, leftBackMotor,
-                rightFrontMotor, rightBackMotor)
-
-        Util.moveFeet(2.5, 0.5, this,
+        Util.moveFeet(-2.1, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.moveFeet(-1.5, 0.5, this,
+
+        Util.travelToDistance(5.0, this, rangeSensor,
+                leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
+
+
+        Util.turnToAngle(AngleUnit.DEGREES, 305.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.moveFeet(3.5, 0.6, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES, 110.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        //Deposit here idiot
 
-        Util.moveFeet(3.0, 0.5, this,
+        Util.turnToAngle(AngleUnit.DEGREES, 320.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.moveFeet(-4.6, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES,45.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.moveFeet(5.0, 0.5, this,
+        /*Util.moveFeet(3.0, 0.9, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        //deposit marker here
 
-        Util.moveFeet(-6.0, 0.5, this,
-                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)*/
+        Util.moveFeet(-6.2, 0.9, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+        */*/
     }
 }

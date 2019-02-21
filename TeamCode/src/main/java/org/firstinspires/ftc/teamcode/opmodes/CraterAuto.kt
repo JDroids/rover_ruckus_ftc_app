@@ -56,26 +56,28 @@ class CraterAuto : LinearOpMode() {
         Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
                 rightFrontMotor, rightBackMotor)
 
-        Util.moveFeet(2.5, 0.3, this,
+        Util.moveFeet(2.4, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.moveFeet(-2.0, 0.5, this,
+        Util.moveFeet(-1.9, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
-        
-        Util.turnToAngle(AngleUnit.DEGREES, 230.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.travelToDistance(5.0, this, rangeSensor,
+        Util.turnToAngle(AngleUnit.DEGREES, 235.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.travelToDistance(3.0, this, rangeSensor,
                 leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
 
 
-        Util.turnToAngle(AngleUnit.DEGREES, 315.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        Util.turnToAngle(AngleUnit.DEGREES, 305.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        /*Util.moveFeet(3.0, 0.9, this,
+        Util.moveFeet(3.5, 0.6, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
+        //Deposit here idiot
 
-        Util.moveFeet(-6.2, 0.9, this,
+        Util.turnToAngle(AngleUnit.DEGREES, 320.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.moveFeet(-5.1, 0.15, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
-        */
     }
 }
