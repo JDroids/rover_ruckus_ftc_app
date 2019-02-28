@@ -28,7 +28,7 @@ class CraterAuto : LinearOpMode() {
     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
 
-    private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "depotServo")}
+    private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "marker")}
 
     private val hangSensor by lazy {
         hardwareMap!!.get(DigitalChannel::class.java, "hangSensor")}
@@ -48,7 +48,9 @@ class CraterAuto : LinearOpMode() {
 
         waitForStart()
 
-        //Util.land(this, hangMotor1, hangMotor2, hangSensor)
+        markerServo.position = 0.0
+
+        Util.land(this, hangMotor1, hangMotor2, hangSensor)
 
         Util.moveFeet(0.3, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
@@ -74,6 +76,7 @@ class CraterAuto : LinearOpMode() {
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
         //Deposit here idiot
+        markerServo.position = 1.0
 
         Util.turnToAngle(AngleUnit.DEGREES, 320.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 

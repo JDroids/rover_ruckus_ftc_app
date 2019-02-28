@@ -1,0 +1,385 @@
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Util.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Util.kt
+index 2b44f57..69bc5c0 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Util.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Util.kt
+@@ -55,13 +55,15 @@ object Util {
+     fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor,
+              magnetSensor: DigitalChannel) {
+         hangMotor1.power = 0.9
+-        hangMotor2.power = -0.9
++        hangMotor2.power = 0.9
+ 
+         while (magnetSensor.state && opMode.opModeIsActive()) {
+             opMode.telemetry.addData("Magnet State", magnetSensor.state)
+             opMode.telemetry.update()
+         }
+ 
++        opMode.sleep(100)
++
+         hangMotor1.power = 0.0
+         hangMotor2.power = 0.0
+ 
+@@ -296,7 +298,7 @@ object Util {
+ 
+         val timer = ElapsedTime()
+ 
+-        while (Math.abs(helper.goldAngle) > 0.03 && opMode.opModeIsActive()) {
++        while (Math.abs(helper.goldAngle) > 0.05 && opMode.opModeIsActive()) {
+             helper.update()
+ 
+             var result = if (helper.goldAngle != -1.0) helper.goldAngle * P_COEFFICIENT else 0.0
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/ConceptTensorFlowObjectDetectionWebcam.java b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/ConceptTensorFlowObjectDetectionWebcam.java
+index f9aa8c7..309c360 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/ConceptTensorFlowObjectDetectionWebcam.java
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/ConceptTensorFlowObjectDetectionWebcam.java
+@@ -51,6 +51,7 @@ import java.util.List;
+  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+  * is explained below.
+  */
++@Disabled
+ @TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+ 
+ public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/CraterAuto.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/CraterAuto.kt
+index 3e5a2e9..a7d0098 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/CraterAuto.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/CraterAuto.kt
+@@ -28,7 +28,7 @@ class CraterAuto : LinearOpMode() {
+     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
+     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
+ 
+-    private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "depotServo")}
++    private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "marker")}
+ 
+     private val hangSensor by lazy {
+         hardwareMap!!.get(DigitalChannel::class.java, "hangSensor")}
+@@ -48,13 +48,13 @@ class CraterAuto : LinearOpMode() {
+ 
+         waitForStart()
+ 
+-        //Util.land(this, hangMotor1, hangMotor2, hangSensor)
++        Util.land(this, hangMotor1, hangMotor2, hangSensor)
+ 
+         Util.moveFeet(0.3, 0.3, this,
+                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+ 
+-        Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
+-                rightFrontMotor, rightBackMotor)
++        /*Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
++                rightFrontMotor, rightBackMotor)*/
+ 
+         Util.moveFeet(2.4, 0.3, this,
+                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/DepotAuto.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/DepotAuto.kt
+index 0c79497..eebd382 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/DepotAuto.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/DepotAuto.kt
+@@ -28,7 +28,7 @@ class DepotAuto : LinearOpMode() {
+     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
+     private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
+ 
+-    private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "depotServo")}
++    private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "marker")}
+ 
+     private val hangSensor by lazy {
+         hardwareMap!!.get(DigitalChannel::class.java, "hangSensor")}
+@@ -48,13 +48,13 @@ class DepotAuto : LinearOpMode() {
+ 
+         waitForStart()
+ 
+-        //Util.land(this, hangMotor1, hangMotor2, hangSensor)
++        Util.land(this, hangMotor1, hangMotor2, hangSensor)
+ 
+         Util.moveFeet(0.3, 0.3, this,
+                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+ 
+-        Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
+-                rightFrontMotor, rightBackMotor)
++        /*Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
++                rightFrontMotor, rightBackMotor)*/
+ 
+         Util.moveFeet(2.4, 0.3, this,
+                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/IntakeTest.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/IntakeTest.kt
+index 5107560..1c05427 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/IntakeTest.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/IntakeTest.kt
+@@ -1,4 +1,31 @@
+-package org.firstinspires.ftc.teamcode.opmodes
++/*package org.firstinspires.ftc.teamcode.opmodes
+ 
+-class IntakeTest {
+-}
+\ No newline at end of file
++import com.qualcomm.robotcore.eventloop.opmode.OpMode
++import com.qualcomm.robotcore.eventloop.opmode.TeleOp
++import com.qualcomm.robotcore.hardware.AnalogInput
++import com.qualcomm.robotcore.hardware.CRServo
++import com.qualcomm.robotcore.hardware.Servo
++
++@TeleOp(name="Intake Positions ")
++class IntakeTest : OpMode() {
++
++    private val armPotent by lazy {hardwareMap.get(AnalogInput::class.java, "potent")}
++    private val gate by lazy {hardwareMap.get(Servo::class.java, "gate")}
++    private val elbow by lazy {hardwareMap.get(Servo::class.java, "elbow")}
++    private val wrist by lazy {hardwareMap.get(Servo::class.java, "wrist")}
++
++    override fun init() {
++        gate.position = 0.0
++    }
++
++    override fun loop() {
++        telemetry.addData("Potentiometer", armPotent.voltage/armPotent.maxVoltage*270)
++        telemetry.addData("Gate pos", gate.position)
++        if (gamepad1.a) {
++            gate.position = 1.0
++        }
++        telemetry.addData("Elbow pos", elbow.position)
++        telemetry.addData("Wrist pos", wrist.position)
++        telemetry.update()
++    }
++}*/
+\ No newline at end of file
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LandTest.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LandTest.kt
+index 5278cdd..1161eca 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LandTest.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LandTest.kt
+@@ -18,8 +18,6 @@ class LandTest : LinearOpMode() {
+         hardwareMap!!.get(DigitalChannel::class.java, "hangSensor")}
+ 
+     override fun runOpMode() {
+-        hangMotor1.direction = DcMotorSimple.Direction.REVERSE
+-
+         waitForStart()
+ 
+         Util.land(this, hangMotor1, hangMotor2, hangSensor)
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt
+index ac2f8ad..2f15d69 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt
+@@ -1,5 +1,6 @@
+ package org.firstinspires.ftc.teamcode.opmodes
+ 
++import com.qualcomm.robotcore.eventloop.opmode.Disabled
+ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+ import com.qualcomm.robotcore.hardware.DcMotorEx
+@@ -8,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+ import org.firstinspires.ftc.teamcode.pathplanning.LinearPathFollower
+ import org.firstinspires.ftc.teamcode.pathplanning.MotionProfilingConstraints
+ 
++@Disabled
+ @TeleOp(name="Linear Path Follower Test")
+ class LinearPathFollowerTest : LinearOpMode() {
+     override fun runOpMode() {
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TeleOp.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TeleOp.kt
+index bde57d0..c9ddcf4 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TeleOp.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TeleOp.kt
+@@ -1,13 +1,11 @@
+ package org.firstinspires.ftc.teamcode.opmodes
+ 
+-import com.acmerobotics.dashboard.FtcDashboard
+-import com.acmerobotics.dashboard.config.Config
+-import com.jdroids.robotlib.controller.PIDControllerImpl
+-import com.qualcomm.hardware.rev.Rev2mDistanceSensor
++//import com.acmerobotics.dashboard.FtcDashboard
++//import com.acmerobotics.dashboard.config.Config
++//import com.jdroids.robotlib.controller.PIDControllerImpl
+ import com.qualcomm.robotcore.eventloop.opmode.OpMode
+ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+ import com.qualcomm.robotcore.hardware.*
+-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+ 
+ @TeleOp(name="TeleOp")
+ class TeleOp : OpMode() {
+@@ -24,21 +22,21 @@ class TeleOp : OpMode() {
+     private val leftArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "leftArmMotor")}
+     private val rightArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "rightArmMotor")}
+ 
+-    private val armPotent by lazy {hardwareMap.get(AnalogInput::class.java, "potent")}
++    //private val armPotent by lazy {hardwareMap.get(AnalogInput::class.java, "potent")}
+     private val spinner by lazy {hardwareMap.get(CRServo::class.java, "intakeServo")}
+     private val gate by lazy {hardwareMap.get(Servo::class.java, "gate")}
+     private val elbow by lazy {hardwareMap.get(Servo::class.java, "elbow")}
+     private val wrist by lazy {hardwareMap.get(Servo::class.java, "wrist")}
+-    private val armExtension by lazy {hardwareMap.get(DcMotorEx::class.java, "extender")}
++    private val armExtension by lazy {hardwareMap.get(CRServo::class.java, "extender")}
+ 
+     private var isGateClosed = true
+-    private var armTarget: Double = -1.0
++    //private var armTarget: Double = -1.0
+     private var spinnerPower: Double = 0.0
+ 
+-    @Config
++    /*@Config
+     object ArmPIDCoefficients {
+-        @JvmField var ARM_P = 0.0
+-    }
++        @JvmField var ARM_P = 0.013
++    }*/
+ 
+     override fun init() {
+         leftFrontMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+@@ -77,61 +75,80 @@ class TeleOp : OpMode() {
+                 squareWithSign(gamepad1.right_stick_x.toDouble()),
+                 gamepad1.right_stick_button
+         )
+-
++        /*
+         // Deal with deposit/intake
+         when {
+             gamepad2.a -> {
+-                armTarget = 0.0
+-                spinnerPower = -1.0 // Direction to intake
++                //armTarget = 35.0
++                spinnerPower = -0.8 // Direction to intake
+                 isGateClosed = true
+-                elbow.position = 0.0 // Ground pos
+-                wrist.position = 0.0 // Ground pos
++                elbow.position = 0.38 // Ground pos
++                wrist.position = 0.6 // Ground pos
+             }
+             gamepad2.b -> {
+-                armTarget = 90.0
+-                spinnerPower = -1.0 // Direction to intake
++                //armTarget = 90.0
++                spinnerPower = -0.9 // Direction to intake
+                 isGateClosed = true
+-                elbow.position = 0.0 // Ground pos
+-                wrist.position = 0.0 // Ground pos
++                elbow.position = 0.38 // Ground pos
++                wrist.position = 0.8 // Ground pos
+             }
+             gamepad2.x -> {
+-                armTarget = 120.0
+-                spinnerPower = -1.0 // Direction to intake
++                //armTarget = 100.0
++                spinnerPower = -0.9 // Direction to intake
+                 isGateClosed = true
+-                elbow.position = 1.0 // Lifted pos
++                elbow.position = 0.38 // Lifted pos
+                 wrist.position = 1.0 // Extended pos
+             }
+             gamepad2.y -> {
+-                armTarget = 120.0
+-                spinnerPower = -1.0 // Direction to intake
++                //armTarget = 100.0
++                spinnerPower = -0.9 // Direction to intake
+                 isGateClosed = false
+-                elbow.position = 1.0 // Lifted pos
++                elbow.position = 0.38 // Lifted pos
+                 wrist.position = 1.0 // Extended pos
+             }
+         }
+ 
+-        val armAngle = (armPotent.voltage/armPotent.maxVoltage)*270.0 //Need to add/subtract so that 0 is parallel to floor
++        //val armAngle = 186 - (armPotent.voltage/armPotent.maxVoltage)*270.0 //Need to add/subtract so that 0 is parallel to floor
+ 
+-        if (armTarget != -1.0) {
++        /*if (armTarget != -1.0) {
+             val speed = (armAngle - armTarget) * ArmPIDCoefficients.ARM_P
+             leftArmMotor.power = speed
+-            rightArmMotor.power = speed
+-        }
++            rightArmMotor.power = -speed
++        }*/
+ 
+         if (!gamepad2.right_bumper) {
+             spinner.power = spinnerPower
+         }
+         else {
+-            spinner.power = 1.0 // Direction to reverse intake
++            spinner.power = 0.9 // Direction to reverse intake
+         }
+ 
+         gate.position = when (isGateClosed) {
+-            true -> 1.0 // Closed pos
+-            false -> 0.0 // Opened pos
++            true -> 0.66 // Closed pos
++            false -> 0.34 // Opened pos
+         }
+-        armExtension.power = squareWithSign(gamepad2.left_stick_y.toDouble())
++        armExtension.power = squareWithSign(-gamepad2.left_stick_y.toDouble())
+ 
+-        FtcDashboard.getInstance().telemetry.update()
++        val armSpeed = squareWithSign(gamepad2.right_stick_y.toDouble())
++
++        leftArmMotor.power = armSpeed
++        rightArmMotor.power = -armSpeed*/
++
++        if (gamepad2.dpad_up) {
++            wrist.position += 0.001
++        }
++        else if (gamepad2.dpad_down) {
++            wrist.position -= 0.001
++        }
++
++
++        if (gamepad2.dpad_left) {
++            elbow.position += 0.001
++        }
++        else if (gamepad2.dpad_right) {
++            elbow.position -= 0.001
++        }
++        //FtcDashboard.getInstance().telemetry.update()
+     }
+ 
+     private fun curvatureDrive(xSpeed: Double, zRotation: Double, isQuickTurn: Boolean) {
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TravelToDistanceTest.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TravelToDistanceTest.kt
+index f955eb4..78fdc06 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TravelToDistanceTest.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TravelToDistanceTest.kt
+@@ -1,12 +1,14 @@
+ package org.firstinspires.ftc.teamcode.opmodes
+ 
+ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
++import com.qualcomm.robotcore.eventloop.opmode.Disabled
+ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+ import com.qualcomm.robotcore.hardware.DcMotorEx
+ import com.qualcomm.robotcore.hardware.DcMotorSimple
+ import org.firstinspires.ftc.teamcode.Util
+ 
++@Disabled
+ @TeleOp(name="TravelToDistanceTest")
+ class TravelToDistanceTest : LinearOpMode() {
+     private val leftFrontMotor
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnTest.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnTest.kt
+index e4744c7..5366b58 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnTest.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnTest.kt
+@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot
+ import org.firstinspires.ftc.teamcode.robot.commands.TurnToAngle
+ import org.firstinspires.ftc.teamcode.Util.toRadians
+ 
++@Disabled
+ @Autonomous(name="TurnTest")
+ class TurnTest : LinearOpMode() {
+     private val imu by lazy {hardwareMap!!.get(BNO055IMU::class.java, "imu")}
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnToGoldOpMode.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnToGoldOpMode.kt
+index 6bbcd4d..f6f7728 100644
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnToGoldOpMode.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/TurnToGoldOpMode.kt
+@@ -1,12 +1,14 @@
+ package org.firstinspires.ftc.teamcode.opmodes
+ 
+ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
++import com.qualcomm.robotcore.eventloop.opmode.Disabled
+ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+ import com.qualcomm.robotcore.hardware.DcMotorEx
+ import com.qualcomm.robotcore.hardware.DcMotorSimple
+ import org.firstinspires.ftc.teamcode.Util
+ import org.firstinspires.ftc.teamcode.robot.SamplingHelper
+ 
++//@Disabled
+ @Autonomous(name="TurnToGold")
+ class TurnToGoldOpMode : LinearOpMode() {
+     private val leftFrontMotor
+diff --git a/robotlib b/robotlib
+--- a/robotlib
++++ b/robotlib
+@@ -1 +1 @@
+-Subproject commit 12e048559502603205fa39fc3a9267fcaa55d2f8
++Subproject commit 12e048559502603205fa39fc3a9267fcaa55d2f8-dirty

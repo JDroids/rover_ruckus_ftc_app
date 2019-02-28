@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.pathplanning.LinearPathFollower
 import org.firstinspires.ftc.teamcode.pathplanning.MotionProfilingConstraints
 
+@Disabled
 @TeleOp(name="Linear Path Follower Test")
 class LinearPathFollowerTest : LinearOpMode() {
     override fun runOpMode() {

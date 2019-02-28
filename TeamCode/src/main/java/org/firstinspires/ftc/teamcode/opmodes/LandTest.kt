@@ -18,8 +18,6 @@ class LandTest : LinearOpMode() {
         hardwareMap!!.get(DigitalChannel::class.java, "hangSensor")}
 
     override fun runOpMode() {
-        hangMotor1.direction = DcMotorSimple.Direction.REVERSE
-
         waitForStart()
 
         Util.land(this, hangMotor1, hangMotor2, hangSensor)

@@ -55,16 +55,17 @@ object Util {
     fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor,
              magnetSensor: DigitalChannel) {
         hangMotor1.power = 0.9
-        hangMotor2.power = -0.9
+        hangMotor2.power = 0.9
 
         while (magnetSensor.state && opMode.opModeIsActive()) {
             opMode.telemetry.addData("Magnet State", magnetSensor.state)
             opMode.telemetry.update()
         }
 
+        opMode.sleep(100)
+
         hangMotor1.power = 0.0
         hangMotor2.power = 0.0
-
     }
 
     fun claim() {
@@ -203,6 +204,11 @@ object Util {
         }
 
         while (!motors.all {!it.isBusy} && opMode.opModeIsActive()) {
+            opMode.telemetry.addData("LeftMotor1", leftMotor1.isBusy)
+            opMode.telemetry.addData("LeftMotor2", leftMotor2.isBusy)
+            opMode.telemetry.addData("RightMotor1", rightMotor1.isBusy)
+            opMode.telemetry.addData("RightMotor2", rightMotor2.isBusy)
+            opMode.telemetry.update()
         }
 
         motors.forEach {
@@ -296,7 +302,7 @@ object Util {
 
         val timer = ElapsedTime()
 
-        while (Math.abs(helper.goldAngle) > 0.03 && opMode.opModeIsActive()) {
+        while (Math.abs(helper.goldAngle) > 0.05 && opMode.opModeIsActive()) {
             helper.update()
 
             var result = if (helper.goldAngle != -1.0) helper.goldAngle * P_COEFFICIENT else 0.0

@@ -29,7 +29,7 @@ class TeleOp : OpMode() {
     private val gate by lazy {hardwareMap.get(Servo::class.java, "gate")}
     private val elbow by lazy {hardwareMap.get(Servo::class.java, "elbow")}
     private val wrist by lazy {hardwareMap.get(Servo::class.java, "wrist")}
-    private val armExtension by lazy {hardwareMap.get(DcMotorEx::class.java, "extender")}
+    private val armExtension by lazy {hardwareMap.get(CRServo::class.java, "extender")}
 
     private var isGateClosed = true
     private var armTarget: Double = -1.0
@@ -37,7 +37,7 @@ class TeleOp : OpMode() {
 
     @Config
     object ArmPIDCoefficients {
-        @JvmField var ARM_P = 0.0
+        @JvmField var ARM_P = 0.013
     }
 
     override fun init() {
@@ -78,45 +78,38 @@ class TeleOp : OpMode() {
                 gamepad1.right_stick_button
         )
 
+
         // Deal with deposit/intake
         when {
             gamepad2.a -> {
-                armTarget = 0.0
-                spinnerPower = -1.0 // Direction to intake
+                spinnerPower = -0.9 // Direction to intake
                 isGateClosed = true
-                elbow.position = 0.0 // Ground pos
-                wrist.position = 0.0 // Ground pos
+                elbow.position = 0.38 // Ground pos
+                wrist.position = 0.7 // Ground pos
             }
             gamepad2.b -> {
-                armTarget = 90.0
-                spinnerPower = -1.0 // Direction to intake
+                spinnerPower = -0.9 // Direction to intake
                 isGateClosed = true
-                elbow.position = 0.0 // Ground pos
+                elbow.position = 0.38// Ground pos
                 wrist.position = 0.0 // Ground pos
             }
             gamepad2.x -> {
-                armTarget = 120.0
-                spinnerPower = -1.0 // Direction to intake
+                spinnerPower = -0.9 // Direction to intake
                 isGateClosed = true
-                elbow.position = 1.0 // Lifted pos
+                elbow.position = 0.38 // Lifted pos
                 wrist.position = 1.0 // Extended pos
             }
             gamepad2.y -> {
-                armTarget = 120.0
-                spinnerPower = -1.0 // Direction to intake
+                spinnerPower = -0.9 // Direction to intake
                 isGateClosed = false
-                elbow.position = 1.0 // Lifted pos
+                elbow.position = 0.38 // Lifted pos
                 wrist.position = 1.0 // Extended pos
             }
         }
 
-        val armAngle = (armPotent.voltage/armPotent.maxVoltage)*270.0 //Need to add/subtract so that 0 is parallel to floor
-
-        if (armTarget != -1.0) {
-            val speed = (armAngle - armTarget) * ArmPIDCoefficients.ARM_P
-            leftArmMotor.power = speed
-            rightArmMotor.power = speed
-        }
+        val armSpeed = squareWithSign(gamepad2.right_stick_y.toDouble())
+        leftArmMotor.power = armSpeed
+        rightArmMotor.power = -armSpeed
 
         if (!gamepad2.right_bumper) {
             spinner.power = spinnerPower

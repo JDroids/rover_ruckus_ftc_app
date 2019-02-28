@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.robot.SamplingHelper
 
+//@Disabled
 @Autonomous(name="TurnToGold")
 class TurnToGoldOpMode : LinearOpMode() {
     private val leftFrontMotor
