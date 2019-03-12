@@ -14,6 +14,13 @@ import java.util.Comparator;
 import java.util.List;
 
 public class SamplingHelper {
+    public enum GoldPosition {
+        LEFT,
+        CENTER,
+        RIGHT,
+        UNKNOWN
+    }
+
     private LinearOpMode opMode;
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -34,9 +41,7 @@ public class SamplingHelper {
      */
     private static final String VUFORIA_KEY = "Af8z1N//////AAABmd+VTcKIy0DvswaS6ptJxhU6esp8q/iwhtFaV1BcqNpTKe5OuZmOsRDT7ThrIx4/49OsRIPgC18aN8v93oqt/F0IGHy32sgT5U3BV7xchvQ5uGUvACuy4+9wXouHBalSXYWX/bLd0hhYVx3oe+D/WqrhqmZTvLbjAdxRdecRc0wNDwUSN1Iz0dQR19h8TDdenzHR7vNBVAR44/X4c8fFuEnJ06lKxJqzunFAgsRmBt5uzG/HLg1vxRJDfX04pEDILoJKfG9hqI1Hx+MjBcdJj4WMLg43D9iokXSuc7I9SJiu7L6TwWutKeK9ANACkCdAN6UaYpNXFRf9pjvhCLeTa2mlWkuN7gIxeswkuL+x4qtQ";
 
-    public double getGoldAngle() {
-        return goldMineralAngle;
-    }
+    // public double getGoldAngle() { return goldMineralAngle; }
 
     public SamplingHelper(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -63,7 +68,14 @@ public class SamplingHelper {
      */
     private TFObjectDetector tfod;
 
-    double goldMineralAngle = -1;
+    public GoldPosition getGoldPosition() {
+        return goldPosition;
+    }
+
+    private GoldPosition goldPosition = GoldPosition.UNKNOWN;
+
+    private int goldMineralX = -1;
+    private int silverMineral1 = -1;
 
     public void update() {
         if (opMode.opModeIsActive()) {
@@ -74,30 +86,46 @@ public class SamplingHelper {
                 if (updatedRecognitions != null) {
                     opMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-                    goldMineralAngle = -1;
-
                     Collections.sort(updatedRecognitions, new Comparator<Recognition>() {
-                        private float getSize(Recognition recognition) {
-                            return recognition.getHeight() * recognition.getWidth();
-                        }
-
-                        @Override
-                            public int compare(Recognition recognition, Recognition t1) {
-                                if (getSize(recognition) > getSize(t1)) {
-                                    return 0;
+                                private float getSize(Recognition recognition) {
+                                    return recognition.getHeight() * recognition.getWidth();
                                 }
 
-                                return 1;
+                                @Override
+                                public int compare(Recognition recognition, Recognition t1) {
+                                    if (getSize(recognition) > getSize(t1)) {
+                                        return 0;
+                                    }
+
+                                    return 1;
+                                }
                             }
-                        }
                     );
 
                     for (Recognition recognition : updatedRecognitions) {
                         if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                            goldMineralAngle = recognition.estimateAngleToObject(AngleUnit.RADIANS);
+                            goldMineralX = (int) (recognition.getLeft());
+                        }
+                        if (recognition.getLabel().equals(LABEL_SILVER_MINERAL)) {
+                            silverMineral1 = (int) (recognition.getLeft());
                         }
                     }
 
+                    if (goldMineralX == -1) {
+                        goldPosition = GoldPosition.LEFT;
+                    }
+                    else if (silverMineral1 != -1) {
+                        if (goldMineralX < silverMineral1) {
+                            goldPosition = GoldPosition.CENTER;
+                        }
+                        else {
+                            goldPosition = GoldPosition.RIGHT;
+                        }
+                    }
+
+                    opMode.telemetry.addData("GoldPos", goldMineralX);
+                    opMode.telemetry.addData("SilverPos", silverMineral1);
+                    //opMode.telemetry.update();
                 }
             }
 

@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot
 import org.firstinspires.ftc.teamcode.robot.commands.TurnToAngle
 import org.firstinspires.ftc.teamcode.Util.toRadians
 
+//@Disabled
 @Autonomous(name="TurnTest")
 class TurnTest : LinearOpMode() {
     private val imu by lazy {hardwareMap!!.get(BNO055IMU::class.java, "imu")}

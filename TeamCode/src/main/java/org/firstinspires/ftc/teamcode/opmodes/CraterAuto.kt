@@ -46,15 +46,21 @@ class CraterAuto : LinearOpMode() {
 
         Util.initializeIMU(imu)
 
+        markerServo.position = 0.65
+
         waitForStart()
 
-        //Util.land(this, hangMotor1, hangMotor2, hangSensor)
+        val goldPosition = Util.getGoldPosition(this, samplingHelper)
+
+        Util.land(this, hangMotor1, hangMotor2, hangSensor)
 
         Util.moveFeet(0.3, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
-                rightFrontMotor, rightBackMotor)
+        Util.sample(this, goldPosition, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        /*Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
+                rightFrontMotor, rightBackMotor)*/
 
         Util.moveFeet(2.4, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
@@ -62,7 +68,7 @@ class CraterAuto : LinearOpMode() {
         Util.moveFeet(-1.9, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES, 235.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        Util.turnToAngle(AngleUnit.DEGREES, 245.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
         Util.travelToDistance(3.0, this, rangeSensor,
                 leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
