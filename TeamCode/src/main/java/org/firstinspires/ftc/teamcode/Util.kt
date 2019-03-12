@@ -8,6 +8,7 @@ import com.jdroids.robotlib.controller.PIDControllerImpl
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.*
@@ -54,7 +55,7 @@ object Util {
 
     fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor,
              magnetSensor: DigitalChannel) {
-        hangMotor1.power = 0.9
+        hangMotor1.power = -0.9
         hangMotor2.power = 0.9
 
         while (magnetSensor.state && opMode.opModeIsActive()) {
@@ -160,8 +161,8 @@ object Util {
         }
     }
 
-    fun encoderTicksToFeet(ticks: Int) = ((ticks / 560.0) * 4 * Math.PI) / 12
-    fun feetToEncoderTicks(feet: Double) = ((12.0 * feet) / (4 * Math.PI) * 560.0).roundToInt()
+    fun encoderTicksToFeet(ticks: Int) = ((ticks / 560.0) * 4 * Math.PI) / 12 / 2
+    fun feetToEncoderTicks(feet: Double) = ((12.0 * feet) / (4 * Math.PI) * 560.0).roundToInt() * 2
 
     data class Position(val waypoint: Waypoint, val angle: Double)
 
@@ -198,17 +199,21 @@ object Util {
         motors.forEach {
             it.apply {
                 mode = DcMotor.RunMode.RUN_TO_POSITION
-                targetPosition = currentPosition + ticks
+                targetPosition = currentPosition - ticks
                 power = powerMax
             }
         }
 
+<<<<<<< HEAD
         while (!motors.all {!it.isBusy} && opMode.opModeIsActive()) {
             opMode.telemetry.addData("LeftMotor1", leftMotor1.isBusy)
             opMode.telemetry.addData("LeftMotor2", leftMotor2.isBusy)
             opMode.telemetry.addData("RightMotor1", rightMotor1.isBusy)
             opMode.telemetry.addData("RightMotor2", rightMotor2.isBusy)
             opMode.telemetry.update()
+=======
+        while ((leftMotor1.isBusy) && opMode.opModeIsActive()) {
+>>>>>>> autonomous-tweaking
         }
 
         motors.forEach {
@@ -247,7 +252,7 @@ object Util {
                     leftMotor1: DcMotorEx, leftMotor2: DcMotorEx,
                     rightMotor1: DcMotorEx, rightMotor2: DcMotorEx, imu: BNO055IMU) {
 
-        var p = 10.0
+        var p = 14.0
 
         val angleRadians = normalizeAngle(angleUnit.toRadians(angle), AngleUnit.RADIANS)
 
@@ -263,12 +268,12 @@ object Util {
         )
 
         while (Math.abs(normalizeAngle(imu.getRadians(), AngleUnit.RADIANS) - angleRadians) >=
-                (Math.PI/64) && opMode.opModeIsActive()) {
+                (Math.PI/32) && opMode.opModeIsActive()) {
             controller.result()
 
             opMode.telemetry.addData("Output", output)
 
-            setMotorVelocity(MotorVelocity(-output, output),
+            setMotorVelocity(MotorVelocity(output, -output),
                     leftMotor1, leftMotor2, rightMotor1, rightMotor2)
 
             opMode.telemetry.update()
@@ -283,9 +288,15 @@ object Util {
                          rightMotor1: DcMotorEx, rightMotor2: DcMotorEx) {
         val wheelCircumference = statistics.wheelRadius * Math.PI * 2.0
 
-        val leftMotorVelocity = motorVelocity.leftVelocity / wheelCircumference / Math.PI * 2
-        val rightMotorVelocity = motorVelocity.rightVelocity / wheelCircumference / Math.PI * 2
+        var leftMotorVelocity = motorVelocity.leftVelocity / wheelCircumference / Math.PI * 2
+        var rightMotorVelocity = motorVelocity.rightVelocity / wheelCircumference / Math.PI * 2
 
+        if (leftMotorVelocity > 20) {
+            leftMotorVelocity = 20.0
+        }
+        if (rightMotorVelocity > 20) {
+            rightMotorVelocity = 20.0
+        }
 
         leftMotor1.setVelocity(leftMotorVelocity, AngleUnit.RADIANS)
         leftMotor2.setVelocity(leftMotorVelocity, AngleUnit.RADIANS)
@@ -295,9 +306,9 @@ object Util {
     }
 
 
-    fun turnToGold(opMode: LinearOpMode, helper: SamplingHelper, leftMotor1: DcMotorEx,
+    /*fun turnToGold(opMode: LinearOpMode, helper: SamplingHelper, leftMotor1: DcMotorEx,
                    leftMotor2: DcMotorEx, rightMotor1: DcMotorEx, rightMotor2: DcMotorEx) {
-        val P_COEFFICIENT = 30
+        val P_COEFFICIENT = 35
         val SCANNING_POWER = 6.0
 
         val timer = ElapsedTime()
@@ -310,9 +321,9 @@ object Util {
             if (helper.goldAngle == -1.0) {
 
                 result = when {
-                    timer.seconds() >= 6 -> {timer.reset(); 0.0}
-                    timer.seconds() >= 5 -> -SCANNING_POWER
-                    timer.seconds() >= 3 -> SCANNING_POWER
+                    timer.seconds() >= 10 -> {timer.reset(); 0.0}
+                    timer.seconds() >= 8 -> -SCANNING_POWER
+                    timer.seconds() >= 4 -> SCANNING_POWER
                     timer.seconds() >= 2 -> -SCANNING_POWER
                     else -> result
                 }
@@ -332,6 +343,29 @@ object Util {
         rightMotor2.power = 0.0
 
         helper.kill()
+    }*/
+
+    fun getGoldPosition(opMode: LinearOpMode, helper: SamplingHelper): SamplingHelper.GoldPosition {
+        helper.update()
+
+        val pos = helper.goldPosition
+
+        opMode.telemetry.addData("Pos", pos)
+        opMode.telemetry.update()
+
+        return pos
+    }
+
+    fun sample(opMode: LinearOpMode, goldPosition: SamplingHelper.GoldPosition,
+               leftMotor1: DcMotorEx, leftMotor2: DcMotorEx,
+               rightMotor1: DcMotorEx, rightMotor2: DcMotorEx, imu: BNO055IMU) {
+        when (goldPosition) {
+            SamplingHelper.GoldPosition.LEFT -> turnToAngle(AngleUnit.DEGREES, 155.0, opMode,
+                    leftMotor1, leftMotor2, rightMotor1, rightMotor2, imu)
+            SamplingHelper.GoldPosition.RIGHT -> turnToAngle(AngleUnit.DEGREES, 215.0, opMode,
+                    leftMotor1, leftMotor2, rightMotor1, rightMotor2, imu)
+            else -> {} //this does nothing, this is just to be explicit
+        }
     }
 
     @Config
@@ -344,7 +378,7 @@ object Util {
                          rightMotor2: DcMotorEx) {
         while (Math.abs(distanceSensor.getDistance(DistanceUnit.INCH) - inches) > 0.5 &&
                 opMode.opModeIsActive()) {
-            val result = 1.5 * (inches - distanceSensor.getDistance(DistanceUnit.INCH))
+            val result = -1.8 * (inches - distanceSensor.getDistance(DistanceUnit.INCH))
 
             setMotorVelocity(MotorVelocity(result, result), leftMotor1, leftMotor2, rightMotor1, rightMotor2)
 

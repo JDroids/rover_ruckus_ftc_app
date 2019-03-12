@@ -46,17 +46,19 @@ class DepotAuto : LinearOpMode() {
 
         Util.initializeIMU(imu)
 
+        markerServo.position = 0.65
+
         waitForStart()
 
-        markerServo.position = 0.0
+        val goldPosition = Util.getGoldPosition(this, samplingHelper)
 
         Util.land(this, hangMotor1, hangMotor2, hangSensor)
 
         Util.moveFeet(0.3, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
-                rightFrontMotor, rightBackMotor)
+        Util.sample(this, goldPosition,
+                leftFrontMotor, leftBackMotor, leftFrontMotor, rightFrontMotor, imu)
 
         Util.moveFeet(2.4, 0.3, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
@@ -64,15 +66,23 @@ class DepotAuto : LinearOpMode() {
         Util.moveFeet(-1.9, 0.5, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES, 235.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        Util.turnToAngle(AngleUnit.DEGREES, 240.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
         Util.travelToDistance(5.0, this, rangeSensor,
                 leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
 
 
-        Util.turnToAngle(AngleUnit.DEGREES, 305.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        Util.turnToAngle(AngleUnit.DEGREES, 135.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.moveFeet(2.4, 0.2, this,
+        Util.moveFeet(1.4, 0.2, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+
+        // Drop
+        markerServo.position = 0.0
+
+        sleep(300)
+
+        Util.moveFeet(-3.4, 1.0, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
 

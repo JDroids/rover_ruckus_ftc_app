@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.robot.SamplingHelper
 
 //@Disabled
-@Autonomous(name="TurnToGold")
-class TurnToGoldOpMode : LinearOpMode() {
+@Autonomous(name="SampleTest")
+class SampleTest : LinearOpMode() {
     private val leftFrontMotor
             by lazy {hardwareMap.get(DcMotorEx::class.java, "lf")}
     private val leftBackMotor
@@ -29,7 +29,15 @@ class TurnToGoldOpMode : LinearOpMode() {
 
         waitForStart()
 
-        Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
-                rightFrontMotor, rightBackMotor)
+        val goldPosition = Util.getGoldPosition(this, samplingHelper)
+
+        samplingHelper.kill()
+
+        telemetry.addData("goldpos", goldPosition)
+        telemetry.update()
+
+        //turn
+
+        sleep(10000)
     }
 }
