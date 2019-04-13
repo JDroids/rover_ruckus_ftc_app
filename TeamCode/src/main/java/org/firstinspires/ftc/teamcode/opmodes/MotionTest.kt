@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes
-
+/*
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.jdroids.robotlib.command.SchedulerImpl
@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.teamcode.Drive
 import org.firstinspires.ftc.teamcode.pathplanning.*
 
 @Disabled
@@ -19,7 +20,9 @@ class MotionTest : LinearOpMode() {
     private val rightMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "right")}
 
     private val statistics = DriveTrainStatistics(1.0/3.0, 1.145833)
-    private val constraints = MotionProfilingConstraints(2.3, 0.75)
+    private val constraints =
+            MotionProfilingConstraints(Drive.DrivetrainRoadrunnerCoefficients.maxVelocity,
+                    Drive.DrivetrainRoadrunnerCoefficients.maxAcceleration)
 
     private val follower = ConstantCurvaturePathFollower(LinearPath(
             Waypoint(0.0, 0.0),
@@ -55,4 +58,4 @@ class MotionTest : LinearOpMode() {
 
         SchedulerImpl.kill()
     }
-}
+}*/

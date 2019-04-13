@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes
-
+/*
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -40,4 +40,4 @@ class SampleTest : LinearOpMode() {
 
         sleep(10000)
     }
-}
+}*/

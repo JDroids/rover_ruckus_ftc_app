@@ -154,10 +154,10 @@ index 5278cdd..1161eca 100644
          waitForStart()
  
          Util.land(this, hangMotor1, hangMotor2, hangSensor)
-diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/PathFollowerTest.kt b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/PathFollowerTest.kt
 index ac2f8ad..2f15d69 100644
---- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt
-+++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/LinearPathFollowerTest.kt
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/PathFollowerTest.kt
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/opmodes/PathFollowerTest.kt
 @@ -1,5 +1,6 @@
  package org.firstinspires.ftc.teamcode.opmodes
  

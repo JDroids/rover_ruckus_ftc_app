@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.*
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
+import org.firstinspires.ftc.teamcode.constants.SharedAutoConstants
 import org.firstinspires.ftc.teamcode.pathplanning.*
 import org.firstinspires.ftc.teamcode.robot.Robot
 import org.firstinspires.ftc.teamcode.robot.SamplingHelper
@@ -53,20 +54,15 @@ object Util {
         imu.initialize(parameters)
     }
 
-    fun land(opMode: LinearOpMode, hangMotor1: DcMotor, hangMotor2: DcMotor,
-             magnetSensor: DigitalChannel) {
-        hangMotor1.power = -0.9
-        hangMotor2.power = 0.9
+    fun land(opMode: LinearOpMode, hangMotor: DcMotor, magnetSensor: DigitalChannel) {
+        hangMotor.power = -0.9
 
         while (magnetSensor.state && opMode.opModeIsActive()) {
             opMode.telemetry.addData("Magnet State", magnetSensor.state)
             opMode.telemetry.update()
         }
 
-        opMode.sleep(100)
-
-        hangMotor1.power = 0.0
-        hangMotor2.power = 0.0
+        hangMotor.power = 0.0
     }
 
     fun claim() {
@@ -181,7 +177,7 @@ object Util {
         return Position(Waypoint(x, y), angle)
     }
 
-    @Config
+    //  @Config
     object TurningPIDCoefficients {
         @JvmField
         var p = 0.05
@@ -204,16 +200,12 @@ object Util {
             }
         }
 
-<<<<<<< HEAD
         while (!motors.all {!it.isBusy} && opMode.opModeIsActive()) {
             opMode.telemetry.addData("LeftMotor1", leftMotor1.isBusy)
             opMode.telemetry.addData("LeftMotor2", leftMotor2.isBusy)
             opMode.telemetry.addData("RightMotor1", rightMotor1.isBusy)
             opMode.telemetry.addData("RightMotor2", rightMotor2.isBusy)
             opMode.telemetry.update()
-=======
-        while ((leftMotor1.isBusy) && opMode.opModeIsActive()) {
->>>>>>> autonomous-tweaking
         }
 
         motors.forEach {
@@ -360,17 +352,14 @@ object Util {
                leftMotor1: DcMotorEx, leftMotor2: DcMotorEx,
                rightMotor1: DcMotorEx, rightMotor2: DcMotorEx, imu: BNO055IMU) {
         when (goldPosition) {
-            SamplingHelper.GoldPosition.LEFT -> turnToAngle(AngleUnit.DEGREES, 155.0, opMode,
+            SamplingHelper.GoldPosition.LEFT -> turnToAngle(AngleUnit.DEGREES,
+                    SharedAutoConstants.LEFT_SAMPLE_ANGLE, opMode,
                     leftMotor1, leftMotor2, rightMotor1, rightMotor2, imu)
-            SamplingHelper.GoldPosition.RIGHT -> turnToAngle(AngleUnit.DEGREES, 215.0, opMode,
+            SamplingHelper.GoldPosition.RIGHT -> turnToAngle(AngleUnit.DEGREES,
+                    SharedAutoConstants.RIGHT_SAMPLE_ANGLE, opMode,
                     leftMotor1, leftMotor2, rightMotor1, rightMotor2, imu)
             else -> {} //this does nothing, this is just to be explicit
         }
-    }
-
-    @Config
-    object TravelToDistancePIDCoefficients {
-        @JvmField var DRIVE_TO_COEFFICIENTS = PIDCoefficients(1.5, 0.0, 0.0)
     }
 
     fun travelToDistance(inches: Double, opMode: LinearOpMode, distanceSensor: DistanceSensor,

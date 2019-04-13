@@ -10,7 +10,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.Util
-import org.firstinspires.ftc.teamcode.Util.getRadians
+import org.firstinspires.ftc.teamcode.constants.CraterAutoConstants
+import org.firstinspires.ftc.teamcode.constants.SharedAutoConstants
 import org.firstinspires.ftc.teamcode.robot.SamplingHelper
 
 @Autonomous(name="Crater Auto")
@@ -25,8 +26,7 @@ class CraterAuto : LinearOpMode() {
     private val rightBackMotor
             by lazy {hardwareMap.get(DcMotorEx::class.java, "rb")}
 
-    private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
-    private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
+    private val hangMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang")}
 
     private val markerServo by lazy {hardwareMap!!.get(Servo::class.java, "marker")}
 
@@ -46,15 +46,16 @@ class CraterAuto : LinearOpMode() {
 
         Util.initializeIMU(imu)
 
-        markerServo.position = 0.65
+        markerServo.position = SharedAutoConstants.MARKER_INIT_POS
 
         waitForStart()
 
         val goldPosition = Util.getGoldPosition(this, samplingHelper)
 
-        Util.land(this, hangMotor1, hangMotor2, hangSensor)
+        Util.land(this, hangMotor, hangSensor)
 
-        Util.moveFeet(0.3, 0.3, this,
+        Util.moveFeet(SharedAutoConstants.GET_OFF_HOOK_DISTANCE,
+                SharedAutoConstants.GET_OFF_HOOK_POWER, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
         Util.sample(this, goldPosition, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
@@ -62,29 +63,35 @@ class CraterAuto : LinearOpMode() {
         /*Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
                 rightFrontMotor, rightBackMotor)*/
 
-        Util.moveFeet(2.4, 0.3, this,
+        Util.moveFeet(SharedAutoConstants.HIT_SAMPLE_DISTANCE, SharedAutoConstants.HIT_SAMPLE_POWER,
+            this, leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
+
+        Util.moveFeet(SharedAutoConstants.BACK_FROM_SAMPLE_DISTANCE,
+                SharedAutoConstants.BACK_FROM_SAMPLE_POWER, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.moveFeet(-1.9, 0.5, this,
+        Util.turnToAngle(AngleUnit.DEGREES, SharedAutoConstants.TURN_TO_WALL_ANGLE, this,
+                leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.travelToDistance(SharedAutoConstants.TARGET_DISTANCE_FROM_WALL, this,
+                rangeSensor, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
+
+
+        Util.turnToAngle(AngleUnit.DEGREES, CraterAutoConstants.TURN_TOWARDS_DEPOT_ANGLE,
+                this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        Util.moveFeet(CraterAutoConstants.DRIVE_TO_DEPOT_DISTANCE,
+                CraterAutoConstants.DRIVE_TO_DEPOT_POWER, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.turnToAngle(AngleUnit.DEGREES, 245.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+        markerServo.position = SharedAutoConstants.MARKER_DROP_POS
 
-        Util.travelToDistance(3.0, this, rangeSensor,
-                leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
+        Util.turnToAngle(AngleUnit.DEGREES,
+                CraterAutoConstants.TURN_BACK_OF_ROBOT_TOWARDS_WALL_TO_AVOID_SAMPLE_FIELD_ANGLE,
+                this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-
-        Util.turnToAngle(AngleUnit.DEGREES, 305.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
-
-        Util.moveFeet(3.5, 0.6, this,
-                leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
-
-        //Deposit here idiot
-        markerServo.position = 1.0
-
-        Util.turnToAngle(AngleUnit.DEGREES, 320.0, this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
-
-        Util.moveFeet(-5.1, 0.15, this,
+        Util.moveFeet(CraterAutoConstants.DRIVE_TO_CRATER_DISTANCE,
+                CraterAutoConstants.DRIVE_TO_CRATER_POWER, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
     }
 }

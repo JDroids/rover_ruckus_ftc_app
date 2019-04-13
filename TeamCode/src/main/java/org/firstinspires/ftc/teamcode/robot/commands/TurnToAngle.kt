@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot
 class TurnToAngle(angleUnit: AngleUnit, value: Double) : Command {
     private val angle = AngleUnit.RADIANS.fromUnit(angleUnit, value)
 
-    @Config
+    // @Config
     object TurningCoefficients {
         @JvmField var p = 10.0
         @JvmField var i = 0.0

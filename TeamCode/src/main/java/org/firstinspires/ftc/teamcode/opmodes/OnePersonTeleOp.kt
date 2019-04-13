@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.constants.TeleOpConstants
 
-@TeleOp(name="TeleOp")
-class TeleOp : OpMode() {
+@TeleOp(name="One Person TeleOp")
+class OnePersonTeleOp : OpMode() {
     private val hangMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang")}
 
     private val leftFrontMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "lf")}
@@ -43,7 +43,7 @@ class TeleOp : OpMode() {
     private val timer = ElapsedTime()
 
     override fun start() {
-        elbow.position = 0.1
+        elbow.position = TeleOpConstants.ELBOW_POSITION
         previousVoltage = pot.voltage
     }
 
@@ -71,45 +71,50 @@ class TeleOp : OpMode() {
         // Deal with deposit/intake
         when {
             // Ground
-            gamepad2.a -> {
+            gamepad1.a -> {
                 spinnerPower = -0.9 // Direction to intake
                 wrist.position = TeleOpConstants.WRIST_INTAKE // Ground pos
                 gate.position = TeleOpConstants.GATE_CLOSED_POS
             }
 
             // Deposit
-            gamepad2.b -> {
+            gamepad1.b -> {
                 spinnerPower = -0.9
                 wrist.position = TeleOpConstants.WRIST_DEPOSIT
                 gate.position = TeleOpConstants.GATE_CLOSED_POS
             }
 
             // Gold gate
-            gamepad2.x -> {
+            gamepad1.x -> {
                 gate.position = TeleOpConstants.GATE_GOLD_POS
             }
             // Silver gate
-            gamepad2.y -> {
+            gamepad1.y -> {
                 gate.position = TeleOpConstants.GATE_SILVER_POS
             }
         }
 
-        if (gamepad2.right_bumper) {
+        if (gamepad1.dpad_right) {
             spinnerPower = 0.0
         }
-        else if (gamepad2.left_bumper) {
+        else if (gamepad1.dpad_left) {
             spinnerPower = 0.9
         }
 
         spinner.power = spinnerPower
 
         val armRotPower =
-                if (Math.abs(gamepad2.left_stick_y) < 0.04) {
+                if (Math.abs(gamepad1.left_trigger) < 0.04 && Math.abs(gamepad1.right_trigger) < 0.04) {
                     (pot.voltage - previousVoltage) * -25
                 }
                 else {
                     previousVoltage = pot.getVoltage()
-                    squareWithSign(gamepad2.left_stick_y.toDouble())
+                    if (gamepad1.left_trigger > 0.004) {
+                        gamepad1.left_trigger.toDouble()
+                    }
+                    else {
+                        -gamepad1.right_trigger.toDouble()
+                    }
                 }
 
         leftArmMotor.power = armRotPower
@@ -118,7 +123,12 @@ class TeleOp : OpMode() {
         previousVoltage = pot.voltage
         timer.reset()
 
-        armExtension.power = squareWithSign(gamepad2.right_stick_y.toDouble())
+        armExtension.power = when {
+            gamepad1.dpad_up -> 0.9
+            gamepad1.dpad_down -> -0.9
+            else -> 0.0
+        }
+
 
         FtcDashboard.getInstance().telemetry.update()
     }

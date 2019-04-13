@@ -11,8 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 
 @TeleOp(name="Arm Free TeleOp")
 class ArmFreeTeleOp : OpMode() {
-    private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang1")}
-    private val hangMotor2 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang2")}
+    private val hangMotor by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang")}
 
     private val leftFrontMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "lf")}
     private val leftBackMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "lb")}
@@ -24,8 +23,6 @@ class ArmFreeTeleOp : OpMode() {
     override fun init() {
         rightFrontMotor.direction = DcMotorSimple.Direction.REVERSE
         rightBackMotor.direction = DcMotorSimple.Direction.REVERSE
-
-        hangMotor1.direction = DcMotorSimple.Direction.REVERSE
     }
 
     private val hangMotorPower = 0.9
@@ -34,16 +31,13 @@ class ArmFreeTeleOp : OpMode() {
         // Deal with hang mechanism (left bumper to retract, right bumper to extend)
         when {
             gamepad1.left_bumper -> {
-                hangMotor1.power = -hangMotorPower
-                hangMotor2.power = -hangMotorPower
+                hangMotor.power = -hangMotorPower
             }
             gamepad1.right_bumper -> {
-                hangMotor1.power = hangMotorPower
-                hangMotor2.power = hangMotorPower
+                hangMotor.power = hangMotorPower
             }
             else -> {
-                hangMotor1.power = 0.0
-                hangMotor2.power = 0.0
+                hangMotor.power = 0.0
             }
         }
         // Deal with drivetrain

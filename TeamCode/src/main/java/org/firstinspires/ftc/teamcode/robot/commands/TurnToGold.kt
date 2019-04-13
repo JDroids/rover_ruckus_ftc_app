@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pathplanning.MotorVelocity
 import org.firstinspires.ftc.teamcode.robot.Robot
 
 class TurnToGold : Command {
-    @Config
+    //@Config
     object TurnCoefficients {
         @JvmField var TURNING_PID = PIDCoefficients(-25.0, 0.0, -1.0)
     }
