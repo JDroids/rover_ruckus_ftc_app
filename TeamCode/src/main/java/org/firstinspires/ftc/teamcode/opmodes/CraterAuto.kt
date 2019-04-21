@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.hardware.bosch.BNO055IMU
+import com.qualcomm.hardware.lynx.LynxController
+import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Util
 import org.firstinspires.ftc.teamcode.constants.CraterAutoConstants
 import org.firstinspires.ftc.teamcode.constants.SharedAutoConstants
 import org.firstinspires.ftc.teamcode.robot.SamplingHelper
+import org.openftc.revextensions2.ExpansionHubEx
 
 @Autonomous(name="Crater Auto")
 class CraterAuto : LinearOpMode() {
@@ -60,9 +63,6 @@ class CraterAuto : LinearOpMode() {
 
         Util.sample(this, goldPosition, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        /*Util.turnToGold(this, samplingHelper, leftFrontMotor, leftBackMotor,
-                rightFrontMotor, rightBackMotor)*/
-
         Util.moveFeet(SharedAutoConstants.HIT_SAMPLE_DISTANCE, SharedAutoConstants.HIT_SAMPLE_POWER,
             this, leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
@@ -73,9 +73,8 @@ class CraterAuto : LinearOpMode() {
         Util.turnToAngle(AngleUnit.DEGREES, SharedAutoConstants.TURN_TO_WALL_ANGLE, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.travelToDistance(SharedAutoConstants.TARGET_DISTANCE_FROM_WALL, this,
+        Util.travelToDistance(SharedAutoConstants.TO_WALL_DISTANCE_IN_INCHES, this,
                 rangeSensor, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
-
 
         Util.turnToAngle(AngleUnit.DEGREES, CraterAutoConstants.TURN_TOWARDS_DEPOT_ANGLE,
                 this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
@@ -84,11 +83,11 @@ class CraterAuto : LinearOpMode() {
                 CraterAutoConstants.DRIVE_TO_DEPOT_POWER, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        markerServo.position = SharedAutoConstants.MARKER_DROP_POS
-
         Util.turnToAngle(AngleUnit.DEGREES,
-                CraterAutoConstants.TURN_BACK_OF_ROBOT_TOWARDS_WALL_TO_AVOID_SAMPLE_FIELD_ANGLE,
+                SharedAutoConstants.TURN_BACK_OF_ROBOT_TOWARDS_WALL_TO_AVOID_SAMPLE_FIELD_ANGLE,
                 this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
+
+        markerServo.position = SharedAutoConstants.MARKER_DROP_POS
 
         Util.moveFeet(CraterAutoConstants.DRIVE_TO_CRATER_DISTANCE,
                 CraterAutoConstants.DRIVE_TO_CRATER_POWER, this,

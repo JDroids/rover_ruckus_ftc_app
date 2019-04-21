@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.DigitalChannel
 import org.firstinspires.ftc.teamcode.Util
 
+@Disabled
 @Autonomous(name="LandTest")
 class LandTest : LinearOpMode() {
     private val hangMotor1 by lazy {hardwareMap!!.get(DcMotorEx::class.java, "hang")}

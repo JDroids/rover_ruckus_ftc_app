@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
 import com.acmerobotics.dashboard.FtcDashboard
-import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.*
@@ -22,28 +21,23 @@ class OnePersonTeleOp : OpMode() {
     private val rightArmMotor by lazy {hardwareMap.get(DcMotorEx::class.java, "rightArmMotor")}
 
     private val pot by lazy {hardwareMap.get(AnalogInput::class.java, "pot")}
-    private val spinner by lazy {hardwareMap.get(DcMotor::class.java, "intake")}
-    private val gate by lazy {hardwareMap.get(Servo::class.java, "gate")}
-    private val elbow by lazy {hardwareMap.get(Servo::class.java, "elbow")}
-    private val wrist by lazy {hardwareMap.get(Servo::class.java, "wrist")}
-    private val armExtension by lazy {hardwareMap.get(CRServo::class.java, "extender")}
 
-    private var armTarget: Double = -1.0
-    private var spinnerPower: Double = 0.0
+    private val intakeClamp by lazy {hardwareMap.get(Servo::class.java, "intake")}
+    private val elbow by lazy {hardwareMap.get(Servo::class.java, "elbow")}
+    private val armExtension by lazy {hardwareMap.get(CRServo::class.java, "extender")}
 
     override fun init() {
         rightFrontMotor.direction = DcMotorSimple.Direction.REVERSE
         rightBackMotor.direction = DcMotorSimple.Direction.REVERSE
     }
 
-    private val hangMotorPower = 0.9
+    private val hangMotorPower = -0.9
     private val armMotorPower = 0.2
 
     private var previousVoltage = 0.0
     private val timer = ElapsedTime()
 
     override fun start() {
-        elbow.position = TeleOpConstants.ELBOW_POSITION
         previousVoltage = pot.voltage
     }
 
@@ -70,38 +64,36 @@ class OnePersonTeleOp : OpMode() {
 
         // Deal with deposit/intake
         when {
-            // Ground
+            // Ground, Open
             gamepad1.a -> {
-                spinnerPower = -0.9 // Direction to intake
-                wrist.position = TeleOpConstants.WRIST_INTAKE // Ground pos
-                gate.position = TeleOpConstants.GATE_CLOSED_POS
+                elbow.position = TeleOpConstants.ELBOW_INTAKE // Ground pos
+                intakeClamp.position = TeleOpConstants.INTAKE_CLAMP_OPEN_POS
             }
 
-            // Deposit
+            // Ground, Closed
             gamepad1.b -> {
-                spinnerPower = -0.9
-                wrist.position = TeleOpConstants.WRIST_DEPOSIT
-                gate.position = TeleOpConstants.GATE_CLOSED_POS
+                elbow.position = TeleOpConstants.ELBOW_INTAKE
+                intakeClamp.position = TeleOpConstants.INTAKE_CLAMP_CLOSED_POS
             }
 
-            // Gold gate
-            gamepad1.x -> {
-                gate.position = TeleOpConstants.GATE_GOLD_POS
-            }
-            // Silver gate
+            // Deposit, Closed
             gamepad1.y -> {
-                gate.position = TeleOpConstants.GATE_SILVER_POS
+                elbow.position = TeleOpConstants.ELBOW_DEPOSIT
+                intakeClamp.position = TeleOpConstants.INTAKE_CLAMP_CLOSED_POS
+            }
+
+            // Deposit, Open
+            gamepad1.x -> {
+                elbow.position = TeleOpConstants.ELBOW_DEPOSIT
+                intakeClamp.position = TeleOpConstants.INTAKE_CLAMP_OPEN_POS
+            }
+
+            // Hang position
+            gamepad1.left_bumper || gamepad2.right_bumper -> {
+                elbow.position = TeleOpConstants.ELBOW_HANG
+                intakeClamp.position = TeleOpConstants.INTAKE_CLAMP_CLOSED_POS
             }
         }
-
-        if (gamepad1.dpad_right) {
-            spinnerPower = 0.0
-        }
-        else if (gamepad1.dpad_left) {
-            spinnerPower = 0.9
-        }
-
-        spinner.power = spinnerPower
 
         val armRotPower =
                 if (Math.abs(gamepad1.left_trigger) < 0.04 && Math.abs(gamepad1.right_trigger) < 0.04) {

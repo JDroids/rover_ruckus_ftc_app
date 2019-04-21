@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.acmerobotics.roadrunner.control.PIDCoefficients
+import com.acmerobotics.roadrunner.profile.MotionConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
@@ -26,9 +27,9 @@ class Drive(private val opMode: OpMode) : TankDrive(DriveConstants.TRACK_WIDTH) 
             this,
             DrivetrainRoadrunnerCoefficients.displacementCoeffs,
             DrivetrainRoadrunnerCoefficients.crossTrackCoeffs,
-            DrivetrainRoadrunnerCoefficients.kV,
-            DrivetrainRoadrunnerCoefficients.kA,
-            DrivetrainRoadrunnerCoefficients.kStatic
+            DriveConstants.kV,
+            DriveConstants.kA,
+            DriveConstants.kStatic
     )
 
     fun followTrajectory(trajectory: Trajectory) {
@@ -44,11 +45,6 @@ class Drive(private val opMode: OpMode) : TankDrive(DriveConstants.TRACK_WIDTH) 
     object DrivetrainRoadrunnerCoefficients {
         @JvmField var displacementCoeffs = PIDCoefficients(0.0, 0.0, 0.0)
         @JvmField var crossTrackCoeffs = PIDCoefficients(0.0, 0.0, 0.0)
-        @JvmField var kV = 0.0
-        @JvmField var kA = 0.0
-        @JvmField var kStatic = 0.0
-        //@JvmField var maxVelocity = 36
-        //@JvmField var maxAcceleration = 0.75
     }
 
     init {

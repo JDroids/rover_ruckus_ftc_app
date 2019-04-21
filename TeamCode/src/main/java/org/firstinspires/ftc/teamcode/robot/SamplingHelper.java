@@ -112,14 +112,14 @@ public class SamplingHelper {
                     }
 
                     if (goldMineralX == -1) {
-                        goldPosition = GoldPosition.LEFT;
+                        goldPosition = GoldPosition.RIGHT;
                     }
                     else if (silverMineral1 != -1) {
                         if (goldMineralX < silverMineral1) {
                             goldPosition = GoldPosition.CENTER;
                         }
                         else {
-                            goldPosition = GoldPosition.RIGHT;
+                            goldPosition = GoldPosition.LEFT;
                         }
                     }
 

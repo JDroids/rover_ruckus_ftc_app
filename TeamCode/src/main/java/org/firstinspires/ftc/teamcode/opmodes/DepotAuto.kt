@@ -58,8 +58,7 @@ class DepotAuto : LinearOpMode() {
                 SharedAutoConstants.GET_OFF_HOOK_POWER, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
 
-        Util.sample(this, goldPosition,
-                leftFrontMotor, leftBackMotor, leftFrontMotor, rightFrontMotor, imu)
+        Util.sample(this, goldPosition, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
         Util.moveFeet(SharedAutoConstants.HIT_SAMPLE_DISTANCE, SharedAutoConstants.HIT_SAMPLE_POWER,
                 this, leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
@@ -71,7 +70,7 @@ class DepotAuto : LinearOpMode() {
         Util.turnToAngle(AngleUnit.DEGREES, SharedAutoConstants.TURN_TO_WALL_ANGLE, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
-        Util.travelToDistance(SharedAutoConstants.TARGET_DISTANCE_FROM_WALL, this,
+        Util.travelToDistance(SharedAutoConstants.TO_WALL_DISTANCE_IN_INCHES, this,
                 rangeSensor, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor)
 
         Util.turnToAngle(AngleUnit.DEGREES, DepotAutoConstants.TURN_TOWARDS_DEPOT_ANGLE,
@@ -80,11 +79,14 @@ class DepotAuto : LinearOpMode() {
         Util.moveFeet(DepotAutoConstants.DRIVE_TO_DEPOT_DISTANCE,
                 DepotAutoConstants.DRIVE_TO_DEPOT_POWER, this,
                 leftFrontMotor, leftBackMotor, rightFrontMotor,  rightBackMotor)
-
         // Drop
         markerServo.position = SharedAutoConstants.MARKER_DROP_POS
 
         sleep(300)
+
+        Util.turnToAngle(AngleUnit.DEGREES,
+                SharedAutoConstants.TURN_BACK_OF_ROBOT_TOWARDS_WALL_TO_AVOID_SAMPLE_FIELD_ANGLE,
+                this, leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor, imu)
 
         Util.moveFeet(DepotAutoConstants.DRIVE_TO_CRATER_DISTANCE,
                 DepotAutoConstants.DRIVE_TO_CRATER_POWER, this,

@@ -1,26 +1,18 @@
 package org.firstinspires.ftc.teamcode
 
-import com.acmerobotics.dashboard.config.Config
+import com.acmerobotics.roadrunner.drive.Kinematics
+import com.acmerobotics.roadrunner.profile.MotionProfile
 import com.jdroids.robotlib.controller.PIDControllerImpl
 //import com.disnodeteam.dogecv.CameraViewDisplay
 //import com.disnodeteam.dogecv.DogeCV
 //import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector
 import com.qualcomm.hardware.bosch.BNO055IMU
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.robotcore.external.ClassFactory
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.*
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 import org.firstinspires.ftc.teamcode.constants.SharedAutoConstants
 import org.firstinspires.ftc.teamcode.pathplanning.*
-import org.firstinspires.ftc.teamcode.robot.Robot
 import org.firstinspires.ftc.teamcode.robot.SamplingHelper
 import org.firstinspires.ftc.teamcode.robot.commands.TurnToAngle
 import kotlin.math.roundToInt
@@ -52,6 +44,28 @@ object Util {
         parameters.loggingTag = "IMU"
 
         imu.initialize(parameters)
+    }
+
+    fun followProfile(profile: MotionProfile, opMode: LinearOpMode, leftMotor1: DcMotorEx,
+                   leftMotor2: DcMotorEx, rightMotor1: DcMotorEx, rightMotor2: DcMotorEx) {
+        val timer = ElapsedTime()
+
+        while (timer.seconds() < profile.duration() && opMode.opModeIsActive()) {
+            val state = profile[timer.seconds()]
+
+            val result = Kinematics.calculateMotorFeedforward(state.v, state.a, DriveConstants.kV,
+                    DriveConstants.kA, DriveConstants.kStatic)
+
+            leftMotor1.power = result
+            leftMotor2.power = result
+            rightMotor1.power = result
+            rightMotor2.power = result
+        }
+
+        leftMotor1.power = 0.0
+        leftMotor2.power = 0.0
+        rightMotor1.power = 0.0
+        rightMotor2.power = 0.0
     }
 
     fun land(opMode: LinearOpMode, hangMotor: DcMotor, magnetSensor: DigitalChannel) {
@@ -200,7 +214,7 @@ object Util {
             }
         }
 
-        while (!motors.all {!it.isBusy} && opMode.opModeIsActive()) {
+        while (rightMotor1.isBusy && opMode.opModeIsActive()) {
             opMode.telemetry.addData("LeftMotor1", leftMotor1.isBusy)
             opMode.telemetry.addData("LeftMotor2", leftMotor2.isBusy)
             opMode.telemetry.addData("RightMotor1", rightMotor1.isBusy)
@@ -280,15 +294,8 @@ object Util {
                          rightMotor1: DcMotorEx, rightMotor2: DcMotorEx) {
         val wheelCircumference = statistics.wheelRadius * Math.PI * 2.0
 
-        var leftMotorVelocity = motorVelocity.leftVelocity / wheelCircumference / Math.PI * 2
-        var rightMotorVelocity = motorVelocity.rightVelocity / wheelCircumference / Math.PI * 2
-
-        if (leftMotorVelocity > 20) {
-            leftMotorVelocity = 20.0
-        }
-        if (rightMotorVelocity > 20) {
-            rightMotorVelocity = 20.0
-        }
+        val leftMotorVelocity = motorVelocity.leftVelocity / wheelCircumference / Math.PI * 2
+        val rightMotorVelocity = motorVelocity.rightVelocity / wheelCircumference / Math.PI * 2
 
         leftMotor1.setVelocity(leftMotorVelocity, AngleUnit.RADIANS)
         leftMotor2.setVelocity(leftMotorVelocity, AngleUnit.RADIANS)
@@ -355,6 +362,9 @@ object Util {
             SamplingHelper.GoldPosition.LEFT -> turnToAngle(AngleUnit.DEGREES,
                     SharedAutoConstants.LEFT_SAMPLE_ANGLE, opMode,
                     leftMotor1, leftMotor2, rightMotor1, rightMotor2, imu)
+            /*SamplingHelper.GoldPosition.CENTER -> turnToAngle(AngleUnit.DEGREES,
+                    SharedAutoConstants.CENTER_SAMPLE_ANGLE, opMode,
+                    leftMotor1, leftMotor2, rightMotor1, rightMotor2, imu)*/
             SamplingHelper.GoldPosition.RIGHT -> turnToAngle(AngleUnit.DEGREES,
                     SharedAutoConstants.RIGHT_SAMPLE_ANGLE, opMode,
                     leftMotor1, leftMotor2, rightMotor1, rightMotor2, imu)

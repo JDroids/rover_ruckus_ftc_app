@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 /*
  * Constants shared between multiple drive types.
  */
-
+//@Config
 public class DriveConstants {
 
     /*
@@ -28,9 +28,9 @@ public class DriveConstants {
 
     public static DriveConstraints BASE_CONSTRAINTS = new DriveConstraints(30.0, 30.0, Math.PI / 2, Math.PI / 2);
 
-    public static double kV = 0;
-    public static double kA = 0;
-    public static double kStatic = 0;
+    public static double kV = 0.00014;
+    public static double kA = -0.00044;
+    public static double kStatic = 0.35;
 
 
     public static double encoderTicksToInches(int ticks) {

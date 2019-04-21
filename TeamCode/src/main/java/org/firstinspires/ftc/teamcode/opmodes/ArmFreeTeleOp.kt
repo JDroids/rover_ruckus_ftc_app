@@ -25,7 +25,7 @@ class ArmFreeTeleOp : OpMode() {
         rightBackMotor.direction = DcMotorSimple.Direction.REVERSE
     }
 
-    private val hangMotorPower = 0.9
+    private val hangMotorPower = -0.9
 
     override fun loop() {
         // Deal with hang mechanism (left bumper to retract, right bumper to extend)

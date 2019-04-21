@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.Drive
+import org.firstinspires.ftc.teamcode.DriveConstants
 import org.firstinspires.ftc.teamcode.pathplanning.*
 
 @Disabled
@@ -22,7 +23,7 @@ class MotionTest : LinearOpMode() {
     private val statistics = DriveTrainStatistics(1.0/3.0, 1.145833)
     private val constraints =
             MotionProfilingConstraints(Drive.DrivetrainRoadrunnerCoefficients.maxVelocity,
-                    Drive.DrivetrainRoadrunnerCoefficients.maxAcceleration)
+                    DriveConstants.BASE_CONSTRAINTS.maximumAcceleration)
 
     private val follower = ConstantCurvaturePathFollower(LinearPath(
             Waypoint(0.0, 0.0),
